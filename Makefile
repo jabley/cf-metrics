@@ -1,13 +1,16 @@
 .PHONY: test build fmt help
 
+build: test
+		gb build all
+
 test: -deps fmt
 	gb test all
 
-build: test
-	gb build all
-
 fmt:
 	goimports -w src/
+
+clean:
+	rm -rf bin/
 
 -deps:
 	go get github.com/constabulary/gb/...
