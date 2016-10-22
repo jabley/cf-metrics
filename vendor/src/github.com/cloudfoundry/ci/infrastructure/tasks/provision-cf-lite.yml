@@ -1,0 +1,38 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: relintdockerhubpushbot/provision-bosh-lite
+
+params:
+  BOSH_LITE_NAME:
+  BOSH_AWS_ACCESS_KEY_ID:
+  BOSH_AWS_SECRET_ACCESS_KEY:
+  BOSH_LITE_ELASTIC_IP:
+  BOSH_LITE_KEYPAIR:
+  BOSH_LITE_SECURITY_GROUP:
+  BOSH_LITE_SUBNET_ID:
+  LITE_PRIVATE_KEY_PATH:
+
+inputs:
+  - name: cli-private
+  - name: bosh-lite
+
+run:
+  path: bash
+  args:
+  - -c
+  - |
+    set -ex
+
+    export BOSH_LITE_PRIVATE_KEY=$PWD/"${LITE_PRIVATE_KEY_PATH}"
+
+    pushd bosh-lite
+
+    env | sort -
+
+    BOSH_LITE_INSTANCE_TYPE="m3.2xlarge" vagrant up --provider aws --destroy-on-error
+
+    popd
