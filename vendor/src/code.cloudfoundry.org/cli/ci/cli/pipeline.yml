@@ -15,15 +15,7 @@ resources:
     branch: master
     ignore_paths:
     - ci
-
-- name: final-cli
-  type: git
-  source:
-    uri: git@github.com:cloudfoundry/cli
-    private_key: {{cf-cli-eng-github-private-key}}
-    branch: master
-    paths:
-    - ci/VERSION
+    - integration
 
 - name: cli-private
   type: git
@@ -47,6 +39,15 @@ resources:
     uri: git@github.com:cloudfoundry/cli-acceptance-tests
     private_key: {{cf-cli-eng-github-private-key}}
     branch: master
+
+- name: cli-integration
+  type: git
+  source:
+    uri: git@github.com:cloudfoundry/cli
+    private_key: {{cf-cli-eng-github-private-key}}
+    branch: master
+    paths:
+    - integration
 
 - name: cf-release-repo
   type: git
@@ -219,12 +220,7 @@ resources:
 - name: slack-alert
   type: slack-notification
   source:
-    url: https://hooks.slack.com/services/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
-
-- name: publish-rpm-timer
-  type: time
-  source:
-    interval: 1h
+    url: {{slack-webhook-url}}
 
 groups:
 - name: cli
@@ -247,8 +243,9 @@ jobs:
   - aggregate:
     - get: cli
       trigger: true
-    - get: final-cli
+      depth: 3
     - get: cli-ci
+      depth: 3
   - aggregate:
     - task: units-linux
       file: cli-ci/ci/cli/tasks/units-linux.yml
@@ -281,9 +278,9 @@ jobs:
     - get: cli
       trigger: true
       passed: [units]
-    - get: final-cli
-      passed: [units]
+      depth: 3
     - get: cli-ci
+      depth: 3
   - aggregate:
     - task: build
       file: cli-ci/ci/cli/tasks/build-binaries.yml
@@ -309,28 +306,41 @@ jobs:
   serial: true
   plan:
   - aggregate:
-    - get: cf-cli-binaries
+    - get: cli
       trigger: true
       passed: [build-binaries]
-    - get: final-cli
-      passed: [build-binaries]
-    - get: cli
+      depth: 3
+    - get: cf-cli-binaries
       passed: [build-binaries]
     - get: cli-acceptance-tests
     - get: cli-ci
+      depth: 3
+    - get: cli-integration
+      depth: 3
     - put: bosh-lite-lock
       resource: bosh-lites-dea-pool
       params:
         acquire: true
   - aggregate:
     - do:
-      - task: linux
+      - task: linux-integration
+        file: cli-ci/ci/cli/tasks/integration-linux.yml
+      - task: linux-gats
         file: cli-ci/ci/cli/tasks/gats-linux.yml
-      - task: windows
+      - task: windows-integration
+        file: cli-ci/ci/cli/tasks/integration-windows.yml
+      - task: windows-gats
         file: cli-ci/ci/cli/tasks/gats-windows.yml
         params:
           ADMIN_USER: {{bosh-lite-admin-username}}
           ADMIN_PASSWORD: {{bosh-lite-admin-password}}
+          GINKGO_ARGS: -slowSpecThreshold=120 -randomizeSuites -skipPackage application ./gats
+      - task: windows-gats-application
+        file: cli-ci/ci/cli/tasks/gats-windows.yml
+        params:
+          ADMIN_USER: {{bosh-lite-admin-username}}
+          ADMIN_PASSWORD: {{bosh-lite-admin-password}}
+          GINKGO_ARGS: -slowSpecThreshold=120 -randomizeSuites ./gats/application
       on_failure:
          put: slack-alert
          params:
@@ -345,45 +355,42 @@ jobs:
   serial: true
   plan:
   - aggregate:
-    - get: final-cli
-      passed: [build-binaries]
     - get: cli
+      trigger: true
       passed: [build-binaries]
+      depth: 3
     - get: cf-release-repo
       params:
         submodules:
         - src/github.com/cloudfoundry/cf-acceptance-tests
     - get: cf-cli-binaries
-      trigger: true
       passed: [build-binaries]
     - get: cli-ci
+      depth: 3
     - put: bosh-lite-lock
       resource: bosh-lites-dea-pool
       params:
         acquire: true
-  - aggregate:
+  - do:
+    - task: cats-config
+      file: cli-ci/ci/cli/tasks/cats-config.yml
+      params:
+        BACKEND: dea
+        INCLUDE_V3: true
+        BROKER_START_TIMEOUT: 330
+        CF_PUSH_TIMEOUT: 210
+        DEFAULT_TIMEOUT: 60
+        LONG_CURL_TIMEOUT: 210
     - task: cats
       file: cli-ci/ci/cli/tasks/cats-linux.yml
       params:
         BACKEND: dea
-        INCLUDE_DEFAULT: true
-        INCLUDE_INTERNET_DEPENDENT: true
-        INCLUDE_ROUTE_SERVICES: true
-        INCLUDE_SECURITY_GROUPS: true
+        NODES: 10
       on_failure:
          put: slack-alert
          params:
            channel: '#cli-firehose'
            text: "cats linux failed OR errored :("
-    - task: cats-services
-      file: cli-ci/ci/cli/tasks/cats-linux.yml
-      params:
-        INCLUDE_SERVICES: true
-      on_failure:
-         put: slack-alert
-         params:
-           channel: '#cli-firehose'
-           text: "cats services linux failed OR errored :("
     ensure:
       put: bosh-lites-dea-pool
       params:
@@ -393,33 +400,37 @@ jobs:
   serial: true
   plan:
   - aggregate:
-    - get: final-cli
-      passed: [build-binaries]
     - get: cli
+      trigger: true
       passed: [build-binaries]
+      depth: 3
     - get: cf-release-repo
       params:
         submodules:
         - src/github.com/cloudfoundry/cf-acceptance-tests
     - get: cf-cli-binaries
-      trigger: true
       passed: [build-binaries]
     - get: cli-ci
+      depth: 3
     - put: bosh-lite-lock
       resource: bosh-lites-diego-pool
       params:
         acquire: true
-  - task: linux
-    file: cli-ci/ci/cli/tasks/cats-linux.yml
-    params:
-      BACKEND: diego
-      INCLUDE_DEFAULT: true
-      INCLUDE_BACKEND_COMPATIBILITY: true
-      INCLUDE_DIEGO_DOCKER: true
-      INCLUDE_DIEGO_SSH: true
-      INCLUDE_INTERNET_DEPENDENT: true
-      INCLUDE_ROUTE_SERVICES: true
-      INCLUDE_SECURITY_GROUPS: true
+  - do:
+    - task: cats-config
+      file: cli-ci/ci/cli/tasks/cats-config.yml
+      params:
+        BACKEND: diego
+        INCLUDE_V3: true
+        BROKER_START_TIMEOUT: 330
+        CF_PUSH_TIMEOUT: 210
+        DEFAULT_TIMEOUT: 60
+        LONG_CURL_TIMEOUT: 210
+    - task: cats
+      file: cli-ci/ci/cli/tasks/cats-linux.yml
+      params:
+        BACKEND: diego
+        NODES: 6
     ensure:
       put: bosh-lites-diego-pool
       params:
@@ -434,27 +445,36 @@ jobs:
   serial: true
   plan:
   - aggregate:
-    - get: cf-cli-binaries
+    - get: cli
       trigger: true
       passed: [build-binaries]
-    - get: final-cli
-      passed: [build-binaries]
-    - get: cli
+      depth: 3
+    - get: cf-cli-binaries
       passed: [build-binaries]
     - get: cf-release-repo
       params:
         submodules:
         - src/github.com/cloudfoundry/cf-acceptance-tests
     - get: cli-ci
+      depth: 3
     - put: bosh-lite-lock
       resource: bosh-lites-dea-pool
       params:
         acquire: true
-  - task: cats
-    file: cli-ci/ci/cli/tasks/cats-windows.yml
-    params:
-      ADMIN_USER: {{bosh-lite-admin-username}}
-      ADMIN_PASSWORD: {{bosh-lite-admin-password}}
+  - do:
+    - task: cats-config
+      file: cli-ci/ci/cli/tasks/cats-config.yml
+      params:
+        BACKEND: dea
+        INCLUDE_V3: false
+        BROKER_START_TIMEOUT: 330
+        CF_PUSH_TIMEOUT: 210
+        DEFAULT_TIMEOUT: 60
+        LONG_CURL_TIMEOUT: 210
+    - task: cats
+      file: cli-ci/ci/cli/tasks/cats-windows.yml
+      params:
+        NODES: 10
     ensure:
       put: bosh-lites-dea-pool
       params:
@@ -469,15 +489,15 @@ jobs:
   serial: true
   plan:
   - aggregate:
-    - get: final-cli
-      passed: [cats-linux, cats-windows, cats-diego, gats]
     - get: cli
-      passed: [cats-linux, cats-windows, cats-diego, gats]
-    - get: cf-cli-binaries
       trigger: true
+      passed: [cats-linux, cats-windows, cats-diego, gats]
+      depth: 3
+    - get: cf-cli-binaries
       passed: [cats-linux, cats-windows, cats-diego, gats]
     - get: cli-private
     - get: cli-ci
+      depth: 3
   - task: extract-binaries
     file: cli-ci/ci/cli/tasks/extract-binaries.yml
     on_failure:
@@ -555,6 +575,7 @@ jobs:
   - aggregate:
     - get: cli-ci-dockerfile
       trigger: true
+      depth: 3
     - get: golang
       trigger: true
       params: {save: true}

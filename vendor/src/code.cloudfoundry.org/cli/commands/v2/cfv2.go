@@ -1,6 +1,10 @@
 package v2
 
+import "code.cloudfoundry.org/cli/commands/v3"
+
 var Commands commandList
+
+const ExperimentalWarning = "This command is in EXPERIMENTAL stage and may change without notice"
 
 type commandList struct {
 	VerboseOrVersion                   bool                                      `short:"v" long:"version" description:"verbose and version flag"`
@@ -20,8 +24,8 @@ type commandList struct {
 	Rename                             RenameCommand                             `command:"rename" description:"Rename an app"`
 	Start                              StartCommand                              `command:"start" alias:"st" description:"Start an app"`
 	Stop                               StopCommand                               `command:"stop" alias:"sp" description:"Stop an app"`
-	Restart                            RestartCommand                            `command:"restart" alias:"rs" description:"Restart an app"`
-	Restage                            RestageCommand                            `command:"restage" alias:"rg" description:"Restage an app"`
+	Restart                            RestartCommand                            `command:"restart" alias:"rs" description:"Stop all instances of the app, then start them again. This may cause downtime."`
+	Restage                            RestageCommand                            `command:"restage" alias:"rg" description:"Recreate the app's executable artifact using the latest pushed app files and the latest environment (variables, service bindings, buildpack, stack, etc.)"`
 	RestartAppInstance                 RestartAppInstanceCommand                 `command:"restart-app-instance" description:"Terminate the running application Instance at the given index and instantiate a new instance of the application with the same index"`
 	Events                             EventsCommand                             `command:"events" description:"Show recent app events"`
 	Files                              FilesCommand                              `command:"files" alias:"f" description:"Print out a list of files in a directory or the contents of a specific file of an app running on the DEA backend"`
@@ -157,4 +161,5 @@ type commandList struct {
 	Plugins                            PluginsCommand                            `command:"plugins" description:"List all available plugin commands"`
 	InstallPlugin                      InstallPluginCommand                      `command:"install-plugin" description:"Install CLI plugin"`
 	UninstallPlugin                    UninstallPluginCommand                    `command:"uninstall-plugin" description:"Uninstall the plugin defined in command argument"`
+	RunTask                            v3.RunTaskCommand                         `command:"run-task" alias:"rt" description:"Run a one-off task on an app"`
 }

@@ -4,10 +4,10 @@ import (
 	"code.cloudfoundry.org/cli/actors/v2actions"
 	"code.cloudfoundry.org/cli/commands/commandsfakes"
 	"code.cloudfoundry.org/cli/commands/flags"
-	"code.cloudfoundry.org/cli/commands/ui"
 	. "code.cloudfoundry.org/cli/commands/v2"
 	"code.cloudfoundry.org/cli/commands/v2/v2fakes"
-	"code.cloudfoundry.org/cli/utils/config"
+	"code.cloudfoundry.org/cli/utils/configv3"
+	"code.cloudfoundry.org/cli/utils/ui"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -16,14 +16,14 @@ import (
 
 var _ = Describe("Help Command", func() {
 	var (
-		fakeUI     ui.UI
+		fakeUI     *ui.UI
 		fakeActor  *v2fakes.FakeHelpActor
 		cmd        HelpCommand
 		fakeConfig *commandsfakes.FakeConfig
 	)
 
 	BeforeEach(func() {
-		fakeUI = ui.NewTestUI(NewBuffer(), NewBuffer())
+		fakeUI = ui.NewTestUI(NewBuffer(), NewBuffer(), NewBuffer())
 		fakeActor = new(v2fakes.FakeHelpActor)
 		fakeConfig = new(commandsfakes.FakeConfig)
 		fakeConfig.BinaryNameReturns("faceman")
@@ -274,14 +274,14 @@ var _ = Describe("Help Command", func() {
 					CommandName: "enable-diego",
 				}
 
-				fakeConfig.PluginsReturns(map[string]config.Plugin{
-					"Diego-Enabler": config.Plugin{
-						Commands: []config.PluginCommand{
+				fakeConfig.PluginsReturns(map[string]configv3.Plugin{
+					"Diego-Enabler": configv3.Plugin{
+						Commands: []configv3.PluginCommand{
 							{
 								Name:     "enable-diego",
 								Alias:    "ed",
 								HelpText: "enable Diego support for an app",
-								UsageDetails: config.PluginUsageDetails{
+								UsageDetails: configv3.PluginUsageDetails{
 									Usage: "faceman diego-enabler this and that and a little stuff",
 									Options: map[string]string{
 										"--first":        "foobar",
@@ -317,7 +317,7 @@ var _ = Describe("Help Command", func() {
 				CommandName: "",
 			}
 			cmd.AllCommands = false
-			cmd.Actor = v2actions.NewActor()
+			cmd.Actor = v2actions.NewActor(nil)
 		})
 
 		It("returns a list of only the common commands", func() {
@@ -358,9 +358,9 @@ var _ = Describe("Help Command", func() {
 
 		Context("when there are multiple installed plugins", func() {
 			BeforeEach(func() {
-				fakeConfig.PluginsReturns(map[string]config.Plugin{
-					"some-plugin": config.Plugin{
-						Commands: []config.PluginCommand{
+				fakeConfig.PluginsReturns(map[string]configv3.Plugin{
+					"some-plugin": configv3.Plugin{
+						Commands: []configv3.PluginCommand{
 							{
 								Name:     "enable",
 								HelpText: "enable command",
@@ -375,16 +375,16 @@ var _ = Describe("Help Command", func() {
 							},
 						},
 					},
-					"Some-other-plugin": config.Plugin{
-						Commands: []config.PluginCommand{
+					"Some-other-plugin": configv3.Plugin{
+						Commands: []configv3.PluginCommand{
 							{
 								Name:     "some-other-plugin-command",
 								HelpText: "does some other thing",
 							},
 						},
 					},
-					"the-last-plugin": config.Plugin{
-						Commands: []config.PluginCommand{
+					"the-last-plugin": configv3.Plugin{
+						Commands: []configv3.PluginCommand{
 							{
 								Name:     "last-plugin-command",
 								HelpText: "does the last thing",
@@ -414,10 +414,10 @@ var _ = Describe("Help Command", func() {
 				}
 				cmd.AllCommands = true
 
-				cmd.Actor = v2actions.NewActor()
-				fakeConfig.PluginsReturns(map[string]config.Plugin{
-					"Diego-Enabler": config.Plugin{
-						Commands: []config.PluginCommand{
+				cmd.Actor = v2actions.NewActor(nil)
+				fakeConfig.PluginsReturns(map[string]configv3.Plugin{
+					"Diego-Enabler": configv3.Plugin{
+						Commands: []configv3.PluginCommand{
 							{
 								Name:     "enable-diego",
 								HelpText: "enable Diego support for an app",
@@ -515,6 +515,7 @@ var _ = Describe("Help Command", func() {
 
 				Expect(fakeUI.Out).To(Say("ENVIRONMENT VARIABLES:"))
 				Expect(fakeUI.Out).To(Say("CF_COLOR=false\\s+Do not colorize output"))
+				Expect(fakeUI.Out).To(Say("CF_DIAL_TIMEOUT=5\\s+Max wait time to establish a connection, including name resolution, in seconds"))
 
 				Expect(fakeUI.Out).To(Say("GLOBAL OPTIONS:"))
 				Expect(fakeUI.Out).To(Say("--help, -h\\s+Show help"))
@@ -522,9 +523,9 @@ var _ = Describe("Help Command", func() {
 
 			Context("when there are multiple installed plugins", func() {
 				BeforeEach(func() {
-					fakeConfig.PluginsReturns(map[string]config.Plugin{
-						"some-plugin": config.Plugin{
-							Commands: []config.PluginCommand{
+					fakeConfig.PluginsReturns(map[string]configv3.Plugin{
+						"some-plugin": configv3.Plugin{
+							Commands: []configv3.PluginCommand{
 								{
 									Name:     "enable",
 									HelpText: "enable command",
@@ -539,16 +540,16 @@ var _ = Describe("Help Command", func() {
 								},
 							},
 						},
-						"Some-other-plugin": config.Plugin{
-							Commands: []config.PluginCommand{
+						"Some-other-plugin": configv3.Plugin{
+							Commands: []configv3.PluginCommand{
 								{
 									Name:     "some-other-plugin-command",
 									HelpText: "does some other thing",
 								},
 							},
 						},
-						"the-last-plugin": config.Plugin{
-							Commands: []config.PluginCommand{
+						"the-last-plugin": configv3.Plugin{
+							Commands: []configv3.PluginCommand{
 								{
 									Name:     "last-plugin-command",
 									HelpText: "does the last thing",

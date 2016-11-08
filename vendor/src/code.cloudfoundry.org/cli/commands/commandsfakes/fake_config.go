@@ -3,9 +3,10 @@ package commandsfakes
 
 import (
 	"sync"
+	"time"
 
 	"code.cloudfoundry.org/cli/commands"
-	"code.cloudfoundry.org/cli/utils/config"
+	"code.cloudfoundry.org/cli/utils/configv3"
 )
 
 type FakeConfig struct {
@@ -15,24 +16,54 @@ type FakeConfig struct {
 	aPIVersionReturns     struct {
 		result1 string
 	}
+	AccessTokenStub        func() string
+	accessTokenMutex       sync.RWMutex
+	accessTokenArgsForCall []struct{}
+	accessTokenReturns     struct {
+		result1 string
+	}
 	BinaryNameStub        func() string
 	binaryNameMutex       sync.RWMutex
 	binaryNameArgsForCall []struct{}
 	binaryNameReturns     struct {
 		result1 string
 	}
-	ColorEnabledStub        func() config.ColorSetting
+	ClientIDStub        func() string
+	clientIDMutex       sync.RWMutex
+	clientIDArgsForCall []struct{}
+	clientIDReturns     struct {
+		result1 string
+	}
+	ClientSecretStub        func() string
+	clientSecretMutex       sync.RWMutex
+	clientSecretArgsForCall []struct{}
+	clientSecretReturns     struct {
+		result1 string
+	}
+	ColorEnabledStub        func() configv3.ColorSetting
 	colorEnabledMutex       sync.RWMutex
 	colorEnabledArgsForCall []struct{}
 	colorEnabledReturns     struct {
-		result1 config.ColorSetting
+		result1 configv3.ColorSetting
 	}
-	CurrentUserStub        func() (config.User, error)
+	CurrentUserStub        func() (configv3.User, error)
 	currentUserMutex       sync.RWMutex
 	currentUserArgsForCall []struct{}
 	currentUserReturns     struct {
-		result1 config.User
+		result1 configv3.User
 		result2 error
+	}
+	DialTimeoutStub        func() time.Duration
+	dialTimeoutMutex       sync.RWMutex
+	dialTimeoutArgsForCall []struct{}
+	dialTimeoutReturns     struct {
+		result1 time.Duration
+	}
+	ExperimentalStub        func() bool
+	experimentalMutex       sync.RWMutex
+	experimentalArgsForCall []struct{}
+	experimentalReturns     struct {
+		result1 bool
 	}
 	LocaleStub        func() string
 	localeMutex       sync.RWMutex
@@ -40,11 +71,22 @@ type FakeConfig struct {
 	localeReturns     struct {
 		result1 string
 	}
-	PluginsStub        func() map[string]config.Plugin
+	PluginsStub        func() map[string]configv3.Plugin
 	pluginsMutex       sync.RWMutex
 	pluginsArgsForCall []struct{}
 	pluginsReturns     struct {
-		result1 map[string]config.Plugin
+		result1 map[string]configv3.Plugin
+	}
+	RefreshTokenStub        func() string
+	refreshTokenMutex       sync.RWMutex
+	refreshTokenArgsForCall []struct{}
+	refreshTokenReturns     struct {
+		result1 string
+	}
+	SetAccessTokenStub        func(token string)
+	setAccessTokenMutex       sync.RWMutex
+	setAccessTokenArgsForCall []struct {
+		token string
 	}
 	SetTargetInformationStub        func(api string, apiVersion string, auth string, loggregator string, doppler string, uaa string, routing string, skipSSLValidation bool)
 	setTargetInformationMutex       sync.RWMutex
@@ -65,29 +107,36 @@ type FakeConfig struct {
 		refreshToken   string
 		sshOAuthClient string
 	}
+	SkipSSLValidationStub        func() bool
+	skipSSLValidationMutex       sync.RWMutex
+	skipSSLValidationArgsForCall []struct{}
+	skipSSLValidationReturns     struct {
+		result1 bool
+	}
 	TargetStub        func() string
 	targetMutex       sync.RWMutex
 	targetArgsForCall []struct{}
 	targetReturns     struct {
 		result1 string
 	}
-	TargetedOrganizationStub        func() config.Organization
+	TargetedOrganizationStub        func() configv3.Organization
 	targetedOrganizationMutex       sync.RWMutex
 	targetedOrganizationArgsForCall []struct{}
 	targetedOrganizationReturns     struct {
-		result1 config.Organization
+		result1 configv3.Organization
 	}
-	TargetedSpaceStub        func() config.Space
+	TargetedSpaceStub        func() configv3.Space
 	targetedSpaceMutex       sync.RWMutex
 	targetedSpaceArgsForCall []struct{}
 	targetedSpaceReturns     struct {
-		result1 config.Space
+		result1 configv3.Space
 	}
-	ExperimentalStub        func() bool
-	experimentalMutex       sync.RWMutex
-	experimentalArgsForCall []struct{}
-	experimentalReturns     struct {
+	VerboseStub        func() (bool, string)
+	verboseMutex       sync.RWMutex
+	verboseArgsForCall []struct{}
+	verboseReturns     struct {
 		result1 bool
+		result2 string
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
@@ -118,6 +167,31 @@ func (fake *FakeConfig) APIVersionReturns(result1 string) {
 	}{result1}
 }
 
+func (fake *FakeConfig) AccessToken() string {
+	fake.accessTokenMutex.Lock()
+	fake.accessTokenArgsForCall = append(fake.accessTokenArgsForCall, struct{}{})
+	fake.recordInvocation("AccessToken", []interface{}{})
+	fake.accessTokenMutex.Unlock()
+	if fake.AccessTokenStub != nil {
+		return fake.AccessTokenStub()
+	} else {
+		return fake.accessTokenReturns.result1
+	}
+}
+
+func (fake *FakeConfig) AccessTokenCallCount() int {
+	fake.accessTokenMutex.RLock()
+	defer fake.accessTokenMutex.RUnlock()
+	return len(fake.accessTokenArgsForCall)
+}
+
+func (fake *FakeConfig) AccessTokenReturns(result1 string) {
+	fake.AccessTokenStub = nil
+	fake.accessTokenReturns = struct {
+		result1 string
+	}{result1}
+}
+
 func (fake *FakeConfig) BinaryName() string {
 	fake.binaryNameMutex.Lock()
 	fake.binaryNameArgsForCall = append(fake.binaryNameArgsForCall, struct{}{})
@@ -143,7 +217,57 @@ func (fake *FakeConfig) BinaryNameReturns(result1 string) {
 	}{result1}
 }
 
-func (fake *FakeConfig) ColorEnabled() config.ColorSetting {
+func (fake *FakeConfig) ClientID() string {
+	fake.clientIDMutex.Lock()
+	fake.clientIDArgsForCall = append(fake.clientIDArgsForCall, struct{}{})
+	fake.recordInvocation("ClientID", []interface{}{})
+	fake.clientIDMutex.Unlock()
+	if fake.ClientIDStub != nil {
+		return fake.ClientIDStub()
+	} else {
+		return fake.clientIDReturns.result1
+	}
+}
+
+func (fake *FakeConfig) ClientIDCallCount() int {
+	fake.clientIDMutex.RLock()
+	defer fake.clientIDMutex.RUnlock()
+	return len(fake.clientIDArgsForCall)
+}
+
+func (fake *FakeConfig) ClientIDReturns(result1 string) {
+	fake.ClientIDStub = nil
+	fake.clientIDReturns = struct {
+		result1 string
+	}{result1}
+}
+
+func (fake *FakeConfig) ClientSecret() string {
+	fake.clientSecretMutex.Lock()
+	fake.clientSecretArgsForCall = append(fake.clientSecretArgsForCall, struct{}{})
+	fake.recordInvocation("ClientSecret", []interface{}{})
+	fake.clientSecretMutex.Unlock()
+	if fake.ClientSecretStub != nil {
+		return fake.ClientSecretStub()
+	} else {
+		return fake.clientSecretReturns.result1
+	}
+}
+
+func (fake *FakeConfig) ClientSecretCallCount() int {
+	fake.clientSecretMutex.RLock()
+	defer fake.clientSecretMutex.RUnlock()
+	return len(fake.clientSecretArgsForCall)
+}
+
+func (fake *FakeConfig) ClientSecretReturns(result1 string) {
+	fake.ClientSecretStub = nil
+	fake.clientSecretReturns = struct {
+		result1 string
+	}{result1}
+}
+
+func (fake *FakeConfig) ColorEnabled() configv3.ColorSetting {
 	fake.colorEnabledMutex.Lock()
 	fake.colorEnabledArgsForCall = append(fake.colorEnabledArgsForCall, struct{}{})
 	fake.recordInvocation("ColorEnabled", []interface{}{})
@@ -161,14 +285,14 @@ func (fake *FakeConfig) ColorEnabledCallCount() int {
 	return len(fake.colorEnabledArgsForCall)
 }
 
-func (fake *FakeConfig) ColorEnabledReturns(result1 config.ColorSetting) {
+func (fake *FakeConfig) ColorEnabledReturns(result1 configv3.ColorSetting) {
 	fake.ColorEnabledStub = nil
 	fake.colorEnabledReturns = struct {
-		result1 config.ColorSetting
+		result1 configv3.ColorSetting
 	}{result1}
 }
 
-func (fake *FakeConfig) CurrentUser() (config.User, error) {
+func (fake *FakeConfig) CurrentUser() (configv3.User, error) {
 	fake.currentUserMutex.Lock()
 	fake.currentUserArgsForCall = append(fake.currentUserArgsForCall, struct{}{})
 	fake.recordInvocation("CurrentUser", []interface{}{})
@@ -186,12 +310,62 @@ func (fake *FakeConfig) CurrentUserCallCount() int {
 	return len(fake.currentUserArgsForCall)
 }
 
-func (fake *FakeConfig) CurrentUserReturns(result1 config.User, result2 error) {
+func (fake *FakeConfig) CurrentUserReturns(result1 configv3.User, result2 error) {
 	fake.CurrentUserStub = nil
 	fake.currentUserReturns = struct {
-		result1 config.User
+		result1 configv3.User
 		result2 error
 	}{result1, result2}
+}
+
+func (fake *FakeConfig) DialTimeout() time.Duration {
+	fake.dialTimeoutMutex.Lock()
+	fake.dialTimeoutArgsForCall = append(fake.dialTimeoutArgsForCall, struct{}{})
+	fake.recordInvocation("DialTimeout", []interface{}{})
+	fake.dialTimeoutMutex.Unlock()
+	if fake.DialTimeoutStub != nil {
+		return fake.DialTimeoutStub()
+	} else {
+		return fake.dialTimeoutReturns.result1
+	}
+}
+
+func (fake *FakeConfig) DialTimeoutCallCount() int {
+	fake.dialTimeoutMutex.RLock()
+	defer fake.dialTimeoutMutex.RUnlock()
+	return len(fake.dialTimeoutArgsForCall)
+}
+
+func (fake *FakeConfig) DialTimeoutReturns(result1 time.Duration) {
+	fake.DialTimeoutStub = nil
+	fake.dialTimeoutReturns = struct {
+		result1 time.Duration
+	}{result1}
+}
+
+func (fake *FakeConfig) Experimental() bool {
+	fake.experimentalMutex.Lock()
+	fake.experimentalArgsForCall = append(fake.experimentalArgsForCall, struct{}{})
+	fake.recordInvocation("Experimental", []interface{}{})
+	fake.experimentalMutex.Unlock()
+	if fake.ExperimentalStub != nil {
+		return fake.ExperimentalStub()
+	} else {
+		return fake.experimentalReturns.result1
+	}
+}
+
+func (fake *FakeConfig) ExperimentalCallCount() int {
+	fake.experimentalMutex.RLock()
+	defer fake.experimentalMutex.RUnlock()
+	return len(fake.experimentalArgsForCall)
+}
+
+func (fake *FakeConfig) ExperimentalReturns(result1 bool) {
+	fake.ExperimentalStub = nil
+	fake.experimentalReturns = struct {
+		result1 bool
+	}{result1}
 }
 
 func (fake *FakeConfig) Locale() string {
@@ -219,7 +393,7 @@ func (fake *FakeConfig) LocaleReturns(result1 string) {
 	}{result1}
 }
 
-func (fake *FakeConfig) Plugins() map[string]config.Plugin {
+func (fake *FakeConfig) Plugins() map[string]configv3.Plugin {
 	fake.pluginsMutex.Lock()
 	fake.pluginsArgsForCall = append(fake.pluginsArgsForCall, struct{}{})
 	fake.recordInvocation("Plugins", []interface{}{})
@@ -237,11 +411,60 @@ func (fake *FakeConfig) PluginsCallCount() int {
 	return len(fake.pluginsArgsForCall)
 }
 
-func (fake *FakeConfig) PluginsReturns(result1 map[string]config.Plugin) {
+func (fake *FakeConfig) PluginsReturns(result1 map[string]configv3.Plugin) {
 	fake.PluginsStub = nil
 	fake.pluginsReturns = struct {
-		result1 map[string]config.Plugin
+		result1 map[string]configv3.Plugin
 	}{result1}
+}
+
+func (fake *FakeConfig) RefreshToken() string {
+	fake.refreshTokenMutex.Lock()
+	fake.refreshTokenArgsForCall = append(fake.refreshTokenArgsForCall, struct{}{})
+	fake.recordInvocation("RefreshToken", []interface{}{})
+	fake.refreshTokenMutex.Unlock()
+	if fake.RefreshTokenStub != nil {
+		return fake.RefreshTokenStub()
+	} else {
+		return fake.refreshTokenReturns.result1
+	}
+}
+
+func (fake *FakeConfig) RefreshTokenCallCount() int {
+	fake.refreshTokenMutex.RLock()
+	defer fake.refreshTokenMutex.RUnlock()
+	return len(fake.refreshTokenArgsForCall)
+}
+
+func (fake *FakeConfig) RefreshTokenReturns(result1 string) {
+	fake.RefreshTokenStub = nil
+	fake.refreshTokenReturns = struct {
+		result1 string
+	}{result1}
+}
+
+func (fake *FakeConfig) SetAccessToken(token string) {
+	fake.setAccessTokenMutex.Lock()
+	fake.setAccessTokenArgsForCall = append(fake.setAccessTokenArgsForCall, struct {
+		token string
+	}{token})
+	fake.recordInvocation("SetAccessToken", []interface{}{token})
+	fake.setAccessTokenMutex.Unlock()
+	if fake.SetAccessTokenStub != nil {
+		fake.SetAccessTokenStub(token)
+	}
+}
+
+func (fake *FakeConfig) SetAccessTokenCallCount() int {
+	fake.setAccessTokenMutex.RLock()
+	defer fake.setAccessTokenMutex.RUnlock()
+	return len(fake.setAccessTokenArgsForCall)
+}
+
+func (fake *FakeConfig) SetAccessTokenArgsForCall(i int) string {
+	fake.setAccessTokenMutex.RLock()
+	defer fake.setAccessTokenMutex.RUnlock()
+	return fake.setAccessTokenArgsForCall[i].token
 }
 
 func (fake *FakeConfig) SetTargetInformation(api string, apiVersion string, auth string, loggregator string, doppler string, uaa string, routing string, skipSSLValidation bool) {
@@ -301,6 +524,31 @@ func (fake *FakeConfig) SetTokenInformationArgsForCall(i int) (string, string, s
 	return fake.setTokenInformationArgsForCall[i].accessToken, fake.setTokenInformationArgsForCall[i].refreshToken, fake.setTokenInformationArgsForCall[i].sshOAuthClient
 }
 
+func (fake *FakeConfig) SkipSSLValidation() bool {
+	fake.skipSSLValidationMutex.Lock()
+	fake.skipSSLValidationArgsForCall = append(fake.skipSSLValidationArgsForCall, struct{}{})
+	fake.recordInvocation("SkipSSLValidation", []interface{}{})
+	fake.skipSSLValidationMutex.Unlock()
+	if fake.SkipSSLValidationStub != nil {
+		return fake.SkipSSLValidationStub()
+	} else {
+		return fake.skipSSLValidationReturns.result1
+	}
+}
+
+func (fake *FakeConfig) SkipSSLValidationCallCount() int {
+	fake.skipSSLValidationMutex.RLock()
+	defer fake.skipSSLValidationMutex.RUnlock()
+	return len(fake.skipSSLValidationArgsForCall)
+}
+
+func (fake *FakeConfig) SkipSSLValidationReturns(result1 bool) {
+	fake.SkipSSLValidationStub = nil
+	fake.skipSSLValidationReturns = struct {
+		result1 bool
+	}{result1}
+}
+
 func (fake *FakeConfig) Target() string {
 	fake.targetMutex.Lock()
 	fake.targetArgsForCall = append(fake.targetArgsForCall, struct{}{})
@@ -326,7 +574,7 @@ func (fake *FakeConfig) TargetReturns(result1 string) {
 	}{result1}
 }
 
-func (fake *FakeConfig) TargetedOrganization() config.Organization {
+func (fake *FakeConfig) TargetedOrganization() configv3.Organization {
 	fake.targetedOrganizationMutex.Lock()
 	fake.targetedOrganizationArgsForCall = append(fake.targetedOrganizationArgsForCall, struct{}{})
 	fake.recordInvocation("TargetedOrganization", []interface{}{})
@@ -344,14 +592,14 @@ func (fake *FakeConfig) TargetedOrganizationCallCount() int {
 	return len(fake.targetedOrganizationArgsForCall)
 }
 
-func (fake *FakeConfig) TargetedOrganizationReturns(result1 config.Organization) {
+func (fake *FakeConfig) TargetedOrganizationReturns(result1 configv3.Organization) {
 	fake.TargetedOrganizationStub = nil
 	fake.targetedOrganizationReturns = struct {
-		result1 config.Organization
+		result1 configv3.Organization
 	}{result1}
 }
 
-func (fake *FakeConfig) TargetedSpace() config.Space {
+func (fake *FakeConfig) TargetedSpace() configv3.Space {
 	fake.targetedSpaceMutex.Lock()
 	fake.targetedSpaceArgsForCall = append(fake.targetedSpaceArgsForCall, struct{}{})
 	fake.recordInvocation("TargetedSpace", []interface{}{})
@@ -369,36 +617,37 @@ func (fake *FakeConfig) TargetedSpaceCallCount() int {
 	return len(fake.targetedSpaceArgsForCall)
 }
 
-func (fake *FakeConfig) TargetedSpaceReturns(result1 config.Space) {
+func (fake *FakeConfig) TargetedSpaceReturns(result1 configv3.Space) {
 	fake.TargetedSpaceStub = nil
 	fake.targetedSpaceReturns = struct {
-		result1 config.Space
+		result1 configv3.Space
 	}{result1}
 }
 
-func (fake *FakeConfig) Experimental() bool {
-	fake.experimentalMutex.Lock()
-	fake.experimentalArgsForCall = append(fake.experimentalArgsForCall, struct{}{})
-	fake.recordInvocation("Experimental", []interface{}{})
-	fake.experimentalMutex.Unlock()
-	if fake.ExperimentalStub != nil {
-		return fake.ExperimentalStub()
+func (fake *FakeConfig) Verbose() (bool, string) {
+	fake.verboseMutex.Lock()
+	fake.verboseArgsForCall = append(fake.verboseArgsForCall, struct{}{})
+	fake.recordInvocation("Verbose", []interface{}{})
+	fake.verboseMutex.Unlock()
+	if fake.VerboseStub != nil {
+		return fake.VerboseStub()
 	} else {
-		return fake.experimentalReturns.result1
+		return fake.verboseReturns.result1, fake.verboseReturns.result2
 	}
 }
 
-func (fake *FakeConfig) ExperimentalCallCount() int {
-	fake.experimentalMutex.RLock()
-	defer fake.experimentalMutex.RUnlock()
-	return len(fake.experimentalArgsForCall)
+func (fake *FakeConfig) VerboseCallCount() int {
+	fake.verboseMutex.RLock()
+	defer fake.verboseMutex.RUnlock()
+	return len(fake.verboseArgsForCall)
 }
 
-func (fake *FakeConfig) ExperimentalReturns(result1 bool) {
-	fake.ExperimentalStub = nil
-	fake.experimentalReturns = struct {
+func (fake *FakeConfig) VerboseReturns(result1 bool, result2 string) {
+	fake.VerboseStub = nil
+	fake.verboseReturns = struct {
 		result1 bool
-	}{result1}
+		result2 string
+	}{result1, result2}
 }
 
 func (fake *FakeConfig) Invocations() map[string][][]interface{} {
@@ -406,28 +655,44 @@ func (fake *FakeConfig) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.aPIVersionMutex.RLock()
 	defer fake.aPIVersionMutex.RUnlock()
+	fake.accessTokenMutex.RLock()
+	defer fake.accessTokenMutex.RUnlock()
 	fake.binaryNameMutex.RLock()
 	defer fake.binaryNameMutex.RUnlock()
+	fake.clientIDMutex.RLock()
+	defer fake.clientIDMutex.RUnlock()
+	fake.clientSecretMutex.RLock()
+	defer fake.clientSecretMutex.RUnlock()
 	fake.colorEnabledMutex.RLock()
 	defer fake.colorEnabledMutex.RUnlock()
 	fake.currentUserMutex.RLock()
 	defer fake.currentUserMutex.RUnlock()
+	fake.dialTimeoutMutex.RLock()
+	defer fake.dialTimeoutMutex.RUnlock()
+	fake.experimentalMutex.RLock()
+	defer fake.experimentalMutex.RUnlock()
 	fake.localeMutex.RLock()
 	defer fake.localeMutex.RUnlock()
 	fake.pluginsMutex.RLock()
 	defer fake.pluginsMutex.RUnlock()
+	fake.refreshTokenMutex.RLock()
+	defer fake.refreshTokenMutex.RUnlock()
+	fake.setAccessTokenMutex.RLock()
+	defer fake.setAccessTokenMutex.RUnlock()
 	fake.setTargetInformationMutex.RLock()
 	defer fake.setTargetInformationMutex.RUnlock()
 	fake.setTokenInformationMutex.RLock()
 	defer fake.setTokenInformationMutex.RUnlock()
+	fake.skipSSLValidationMutex.RLock()
+	defer fake.skipSSLValidationMutex.RUnlock()
 	fake.targetMutex.RLock()
 	defer fake.targetMutex.RUnlock()
 	fake.targetedOrganizationMutex.RLock()
 	defer fake.targetedOrganizationMutex.RUnlock()
 	fake.targetedSpaceMutex.RLock()
 	defer fake.targetedSpaceMutex.RUnlock()
-	fake.experimentalMutex.RLock()
-	defer fake.experimentalMutex.RUnlock()
+	fake.verboseMutex.RLock()
+	defer fake.verboseMutex.RUnlock()
 	return fake.invocations
 }
 

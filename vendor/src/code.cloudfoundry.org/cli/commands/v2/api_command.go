@@ -6,18 +6,17 @@ import (
 	"strings"
 
 	"code.cloudfoundry.org/cli/actors/configactions"
-	"code.cloudfoundry.org/cli/api/cloudcontrollerv2"
 	oldCmd "code.cloudfoundry.org/cli/cf/cmd"
 	"code.cloudfoundry.org/cli/commands"
 	"code.cloudfoundry.org/cli/commands/flags"
-	"code.cloudfoundry.org/cli/commands/ui"
+	"code.cloudfoundry.org/cli/commands/v2/common"
 )
 
 //go:generate counterfeiter . APIConfigActor
 
 type APIConfigActor interface {
 	ClearTarget()
-	SetTarget(CCAPI string, skipSSLValidation bool) (configactions.Warnings, error)
+	SetTarget(settings configactions.TargetSettings) (configactions.Warnings, error)
 }
 
 type ApiCommand struct {
@@ -33,7 +32,7 @@ type ApiCommand struct {
 }
 
 func (cmd *ApiCommand) Setup(config commands.Config, ui commands.UI) error {
-	cmd.Actor = configactions.NewActor(config, cloudcontrollerv2.NewCloudControllerClient())
+	cmd.Actor = configactions.NewActor(config, common.NewCloudControllerClient(config.BinaryName()))
 	cmd.UI = ui
 	cmd.Config = config
 	return nil
@@ -45,7 +44,7 @@ func (cmd *ApiCommand) Execute(args []string) error {
 		return nil
 	}
 
-	cmd.UI.DisplayText("This command is in EXPERIMENTAL stage and may change without notice")
+	cmd.UI.DisplayText(ExperimentalWarning)
 	cmd.UI.DisplayNewline()
 
 	if cmd.Unset {
@@ -53,7 +52,7 @@ func (cmd *ApiCommand) Execute(args []string) error {
 	}
 
 	if cmd.OptionalArgs.URL != "" {
-		err := cmd.SetAPI()
+		err := cmd.setAPI()
 		if err != nil {
 			return err
 		}
@@ -90,19 +89,23 @@ func DisplayCurrentTargetInformation(config commands.Config, commandUI commands.
 	return nil
 }
 
-func (cmd *ApiCommand) SetAPI() error {
+func (cmd *ApiCommand) setAPI() error {
 	cmd.UI.DisplayHeaderFlavorText("Setting api endpoint to {{.Endpoint}}...", map[string]interface{}{
 		"Endpoint": cmd.OptionalArgs.URL,
 	})
 
-	api := cmd.processURL(cmd.OptionalArgs.URL)
+	apiURL := processURL(cmd.OptionalArgs.URL)
 
-	_, err := cmd.Actor.SetTarget(api, cmd.SkipSSLValidation)
+	_, err := cmd.Actor.SetTarget(configactions.TargetSettings{
+		URL:               apiURL,
+		SkipSSLValidation: cmd.SkipSSLValidation,
+		DialTimeout:       cmd.Config.DialTimeout(),
+	})
 	if err != nil {
-		return cmd.handleError(err)
+		return common.HandleError(err)
 	}
 
-	if strings.HasPrefix(api, "http:") {
+	if strings.HasPrefix(apiURL, "http:") {
 		cmd.UI.DisplayText("Warning: Insecure http API endpoint detected: secure https API endpoints are recommended")
 	}
 
@@ -111,21 +114,10 @@ func (cmd *ApiCommand) SetAPI() error {
 	return nil
 }
 
-func (_ ApiCommand) processURL(apiURL string) string {
+func processURL(apiURL string) string {
 	if !strings.HasPrefix(apiURL, "http") {
 		return fmt.Sprintf("https://%s", apiURL)
 
 	}
 	return apiURL
-}
-
-func (cmd ApiCommand) handleError(err error) error {
-	switch e := err.(type) {
-	case cloudcontrollerv2.UnverifiedServerError:
-		return ui.InvalidSSLCertError{API: cmd.OptionalArgs.URL}
-
-	case cloudcontrollerv2.RequestError:
-		return ui.APIRequestError{Err: e}
-	}
-	return err
 }

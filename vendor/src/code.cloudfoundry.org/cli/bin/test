@@ -33,12 +33,12 @@ go fmt ./...
 
 echo -e "\n Vetting packages for potential issues..."
 go tool vet cf/.
-for file in $(find {actors,commands,cf,plugin,testhelpers,utils} \( -name "*.go" -not -iname "*test.go" \))
+for file in $(find {actors,commands,cf,plugin,utils} \( -name "*.go" -not -iname "*test.go" \))
 do
   go tool vet -all -shadow=true $file
 done
 
-CF_HOME=$(pwd)/fixtures ginkgo -r -randomizeAllSpecs -randomizeSuites $@
+CF_HOME=$(pwd)/fixtures ginkgo -r -randomizeAllSpecs -randomizeSuites -skipPackage integration $@
 
 echo -e "\n Running build script to confirm everything compiles..."
 bin/build

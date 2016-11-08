@@ -328,6 +328,10 @@
     "translation": "App {{.AppName}} ist bereits an {{.ServiceName}} gebunden."
   },
   {
+    "id": "App {{.AppName}} not found",
+    "translation": ""
+  },
+  {
     "id": "Append API request diagnostics to a log file",
     "translation": "Anhängen des Diagnoseprogramms für API-Anforderungen an eine Protokolldatei"
   },
@@ -876,7 +880,7 @@
     "translation": ""
   },
   {
-    "id": "CF_NAME delete-space SPACE [-f]",
+    "id": "CF_NAME delete-space SPACE [-o ORG] [-f]",
     "translation": ""
   },
   {
@@ -1177,6 +1181,10 @@
   },
   {
     "id": "CF_NAME routes [--orglevel]",
+    "translation": ""
+  },
+  {
+    "id": "CF_NAME run-task APP_NAME COMMAND\\n\\nEXAMPLES:\\n   CF_NAME run-task my-app \\\"bundle exec rake db:migrate\\\"",
     "translation": ""
   },
   {
@@ -1928,6 +1936,10 @@
     "translation": "Erstellen von Bereich {{.SpaceName}} in Organisation {{.OrgName}} als {{.CurrentUser}}..."
   },
   {
+    "id": "Creating task for app {{.AppName}} in org {{.OrgName}} / space {{.SpaceName}} as {{.CurrentUser}}...",
+    "translation": ""
+  },
+  {
     "id": "Creating user provided service {{.ServiceName}} in org {{.OrgName}} / space {{.SpaceName}} as {{.CurrentUser}}...",
     "translation": "Erstellen von vom Benutzer zur Verfügung gestelltem Service {{.ServiceName}} in Organisation {{.OrgName}} / Bereich {{.SpaceName}} als {{.CurrentUser}}..."
   },
@@ -2068,6 +2080,10 @@
     "translation": "Löschen wurde abgebrochen"
   },
   {
+    "id": "Delete space within specified org",
+    "translation": ""
+  },
+  {
     "id": "Deletes a security group",
     "translation": "Sicherheitsgruppe löschen"
   },
@@ -2094,6 +2110,10 @@
   {
     "id": "Deleting quota {{.QuotaName}} as {{.Username}}...",
     "translation": "Löschen von Größenbeschränkung {{.QuotaName}} als {{.Username}}..."
+  },
+  {
+    "id": "Deleting route {{.Route}} ...",
+    "translation": ""
   },
   {
     "id": "Deleting route {{.Route}}...",
@@ -2876,6 +2896,10 @@
     "translation": "Abrufen von Routergruppen als {{.Username}} ...\n"
   },
   {
+    "id": "Getting routes as {{.CurrentUser}} ...",
+    "translation": ""
+  },
+  {
     "id": "Getting routes as {{.Username}} ...\n",
     "translation": "Abrufen von Routen als {{.Username}} ...\n"
   },
@@ -3580,6 +3604,10 @@
     "translation": "Maximale Wartezeit auf das Staging des Buildpacks in Minuten"
   },
   {
+    "id": "Max wait time to establish a connection, including name resolution, in seconds",
+    "translation": ""
+  },
+  {
     "id": "Maximum amount of memory an application instance can have (e.g. 1024M, 1G, 10G)",
     "translation": "Maximalwert für den möglichen Speicher einer Anwendungsinstanz (z.B. 1024M, 1G, 10G)"
   },
@@ -3992,6 +4020,14 @@
     "translation": "Pfad zum Manifest"
   },
   {
+    "id": "Path used in combination with HOSTNAME and DOMAIN to specify the route to bind",
+    "translation": ""
+  },
+  {
+    "id": "Path used in combination with HOSTNAME and DOMAIN to specify the route to unbind",
+    "translation": ""
+  },
+  {
     "id": "Path used to identify the HTTP route",
     "translation": "Für Ermittlung der HTTP-Route verwendeter Pfad"
   },
@@ -4180,6 +4216,10 @@
     "translation": "Lesezugriff auf Organisationsinformationen und auf Berichte\n"
   },
   {
+    "id": "Really delete orphaned routes?",
+    "translation": ""
+  },
+  {
     "id": "Really delete orphaned routes?{{.Prompt}}",
     "translation": "Sollen verwaiste Routen wirklich gelöscht werden?{{.Prompt}}"
   },
@@ -4206,6 +4246,10 @@
   {
     "id": "Received invalid SSL certificate from ",
     "translation": "Ungültiges SSL-Zertifikat empfangen von "
+  },
+  {
+    "id": "Recreate the app's executable artifact using the latest pushed app files and the latest environment (variables, service bindings, buildpack, stack, etc.)",
+    "translation": ""
   },
   {
     "id": "Recursively remove a service and child objects from Cloud Foundry database without making requests to a service broker",
@@ -4464,6 +4508,10 @@
     "translation": "Regeln"
   },
   {
+    "id": "Run a one-off task on an app",
+    "translation": ""
+  },
+  {
     "id": "Running Environment Variable Groups:",
     "translation": "Umgebungsvariablengruppen ausführen:"
   },
@@ -4606,6 +4654,10 @@
   {
     "id": "Service instance {{.ServiceInstanceName}} does not exist.",
     "translation": "Serviceinstanz {{.ServiceInstanceName}} ist nicht vorhanden."
+  },
+  {
+    "id": "Service instance {{.ServiceInstance}} not found",
+    "translation": ""
   },
   {
     "id": "Service instance: {{.ServiceName}}",
@@ -4856,6 +4908,10 @@
     "translation": ""
   },
   {
+    "id": "Stop all instances of the app, then start them again. This may cause downtime.",
+    "translation": ""
+  },
+  {
     "id": "Stop an app",
     "translation": "Eine App stoppen"
   },
@@ -4932,6 +4988,10 @@
     "translation": "Adressierter Bereich {{.SpaceName}}\n"
   },
   {
+    "id": "Task {{.TaskSequenceID}} has been submitted successfully for execution.",
+    "translation": ""
+  },
+  {
     "id": "Terminate the running application Instance at the given index and instantiate a new instance of the application with the same index",
     "translation": "Die aktive Anwendungsinstanz beim gegebenen Index beenden und eine neue Instanz der Anwendung mit demselben Index instanziieren"
   },
@@ -4969,6 +5029,10 @@
   },
   {
     "id": "The command name",
+    "translation": ""
+  },
+  {
+    "id": "The command to execute",
     "translation": ""
   },
   {
@@ -5246,6 +5310,10 @@
   {
     "id": "This domain is shared across all orgs.\nDeleting it will remove all associated routes, and will make any app with this domain unreachable.\nAre you sure you want to delete the domain {{.DomainName}}? ",
     "translation": "Die Domäne wird von allen Organisationen gemeinsam genutzt.\nDurch das Löschen der Domäne werden alle zugehörigen Routen entfernt und alle Apps dieser Domäne werden unerreichbar.\nSind Sie sicher, dass Sie die Domäne {{.DomainName}} löschen möchten? "
+  },
+  {
+    "id": "This is for backwards compatibility",
+    "translation": ""
   },
   {
     "id": "This service doesn't support creation of keys.",

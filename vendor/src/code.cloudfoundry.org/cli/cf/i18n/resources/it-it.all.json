@@ -328,6 +328,10 @@
     "translation": "L'applicazione {{.AppName}} è già associata a {{.ServiceName}}."
   },
   {
+    "id": "App {{.AppName}} not found",
+    "translation": ""
+  },
+  {
     "id": "Append API request diagnostics to a log file",
     "translation": "Aggiungi diagnostica della richiesta API in un file di log"
   },
@@ -876,8 +880,8 @@
     "translation": "CF_NAME delete-shared-domain DOMINIO [-f]"
   },
   {
-    "id": "CF_NAME delete-space SPACE [-f]",
-    "translation": "CF_NAME delete-space SPAZIO [-f]"
+    "id": "CF_NAME delete-space SPACE [-o ORG] [-f]",
+    "translation": ""
   },
   {
     "id": "CF_NAME delete-space-quota SPACE-QUOTA-NAME [-f]",
@@ -1177,6 +1181,10 @@
   },
   {
     "id": "CF_NAME routes [--orglevel]",
+    "translation": ""
+  },
+  {
+    "id": "CF_NAME run-task APP_NAME COMMAND\\n\\nEXAMPLES:\\n   CF_NAME run-task my-app \\\"bundle exec rake db:migrate\\\"",
     "translation": ""
   },
   {
@@ -1928,6 +1936,10 @@
     "translation": "Creazione dello spazio {{.SpaceName}} nell'organizzazione {{.OrgName}} come {{.CurrentUser}} in corso..."
   },
   {
+    "id": "Creating task for app {{.AppName}} in org {{.OrgName}} / space {{.SpaceName}} as {{.CurrentUser}}...",
+    "translation": ""
+  },
+  {
     "id": "Creating user provided service {{.ServiceName}} in org {{.OrgName}} / space {{.SpaceName}} as {{.CurrentUser}}...",
     "translation": "Creazione del servizio fornito dall'utente {{.ServiceName}} nell'organizzazione {{.OrgName}} / spazio {{.SpaceName}} come {{.CurrentUser}} in corso..."
   },
@@ -2068,6 +2080,10 @@
     "translation": "Elimina annullamenti"
   },
   {
+    "id": "Delete space within specified org",
+    "translation": ""
+  },
+  {
     "id": "Deletes a security group",
     "translation": "Elimina un gruppo di sicurezza"
   },
@@ -2094,6 +2110,10 @@
   {
     "id": "Deleting quota {{.QuotaName}} as {{.Username}}...",
     "translation": "Eliminazione della quota {{.QuotaName}} come {{.Username}} in corso..."
+  },
+  {
+    "id": "Deleting route {{.Route}} ...",
+    "translation": ""
   },
   {
     "id": "Deleting route {{.Route}}...",
@@ -2876,6 +2896,10 @@
     "translation": "Richiamo dei gruppi di router come {{.Username}} in corso...\n"
   },
   {
+    "id": "Getting routes as {{.CurrentUser}} ...",
+    "translation": ""
+  },
+  {
     "id": "Getting routes as {{.Username}} ...\n",
     "translation": "Richiamo delle rotte come {{.Username}} in corso...\n"
   },
@@ -3580,6 +3604,10 @@
     "translation": "Tempo massimo di attesa per la preparazione del pacchetto di build, in minuti"
   },
   {
+    "id": "Max wait time to establish a connection, including name resolution, in seconds",
+    "translation": ""
+  },
+  {
     "id": "Maximum amount of memory an application instance can have (e.g. 1024M, 1G, 10G)",
     "translation": "Quantità massima di memoria che può avere un'istanza dell'applicazione (ad esempio, 1024M, 1G, 10G)"
   },
@@ -3992,6 +4020,14 @@
     "translation": "Percorso del manifest"
   },
   {
+    "id": "Path used in combination with HOSTNAME and DOMAIN to specify the route to bind",
+    "translation": ""
+  },
+  {
+    "id": "Path used in combination with HOSTNAME and DOMAIN to specify the route to unbind",
+    "translation": ""
+  },
+  {
     "id": "Path used to identify the HTTP route",
     "translation": "Percorso utilizzato per identificare la rotta HTTP"
   },
@@ -4180,6 +4216,10 @@
     "translation": "Accesso in sola lettura a informazioni e report dell'organizzazione\n"
   },
   {
+    "id": "Really delete orphaned routes?",
+    "translation": ""
+  },
+  {
     "id": "Really delete orphaned routes?{{.Prompt}}",
     "translation": "Si è sicuri di voler eliminare le rotte orfane?{{.Prompt}}"
   },
@@ -4206,6 +4246,10 @@
   {
     "id": "Received invalid SSL certificate from ",
     "translation": "È stato ricevuto un certificato SSL non valido da "
+  },
+  {
+    "id": "Recreate the app's executable artifact using the latest pushed app files and the latest environment (variables, service bindings, buildpack, stack, etc.)",
+    "translation": ""
   },
   {
     "id": "Recursively remove a service and child objects from Cloud Foundry database without making requests to a service broker",
@@ -4464,6 +4508,10 @@
     "translation": "Regole"
   },
   {
+    "id": "Run a one-off task on an app",
+    "translation": ""
+  },
+  {
     "id": "Running Environment Variable Groups:",
     "translation": "Gruppi di variabili di ambiente in esecuzione:"
   },
@@ -4606,6 +4654,10 @@
   {
     "id": "Service instance {{.ServiceInstanceName}} does not exist.",
     "translation": "L'istanza del servizio {{.ServiceInstanceName}} non esiste."
+  },
+  {
+    "id": "Service instance {{.ServiceInstance}} not found",
+    "translation": ""
   },
   {
     "id": "Service instance: {{.ServiceName}}",
@@ -4856,6 +4908,10 @@
     "translation": "Stato: {{.State}}"
   },
   {
+    "id": "Stop all instances of the app, then start them again. This may cause downtime.",
+    "translation": ""
+  },
+  {
     "id": "Stop an app",
     "translation": "Arresta un'applicazione"
   },
@@ -4932,6 +4988,10 @@
     "translation": "Spazio di destinazione {{.SpaceName}}\n"
   },
   {
+    "id": "Task {{.TaskSequenceID}} has been submitted successfully for execution.",
+    "translation": ""
+  },
+  {
     "id": "Terminate the running application Instance at the given index and instantiate a new instance of the application with the same index",
     "translation": "Termina l'istanza dell'applicazione in esecuzione in corrispondenza dell'indice specificato e crea una nuova istanza dell'applicazione con lo stesso indice"
   },
@@ -4969,6 +5029,10 @@
   },
   {
     "id": "The command name",
+    "translation": ""
+  },
+  {
+    "id": "The command to execute",
     "translation": ""
   },
   {
@@ -5246,6 +5310,10 @@
   {
     "id": "This domain is shared across all orgs.\nDeleting it will remove all associated routes, and will make any app with this domain unreachable.\nAre you sure you want to delete the domain {{.DomainName}}? ",
     "translation": "Questo dominio è condiviso tra tutte le organizzazioni.\nLa sua eliminazione rimuoverà tutte le rotte associate e renderà irraggiungibile le applicazioni con questo dominio.\nSei sicuro di voler eliminare il dominio {{.DomainName}}? "
+  },
+  {
+    "id": "This is for backwards compatibility",
+    "translation": ""
   },
   {
     "id": "This service doesn't support creation of keys.",

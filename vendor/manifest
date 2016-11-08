@@ -2,6 +2,38 @@
 	"version": 0,
 	"dependencies": [
 		{
+			"importpath": "code.cloudfoundry.org/cli",
+			"repository": "https://github.com/cloudfoundry/cli",
+			"revision": "02250f978c29f7394aaaa5758d79fc529825535a",
+			"branch": "master"
+		},
+		{
+			"importpath": "code.cloudfoundry.org/diego-ssh/server",
+			"repository": "https://github.com/cloudfoundry/diego-ssh",
+			"revision": "9ddfd3bdd34128c94a0d72f926072b715fb96a0a",
+			"branch": "master",
+			"path": "/server"
+		},
+		{
+			"importpath": "code.cloudfoundry.org/gofileutils/fileutils",
+			"repository": "https://github.com/cloudfoundry/gofileutils",
+			"revision": "9cc1c2584bed48590cb019b4ac5b962b2a81278a",
+			"branch": "master",
+			"path": "/fileutils"
+		},
+		{
+			"importpath": "code.cloudfoundry.org/lager",
+			"repository": "https://github.com/cloudfoundry/lager",
+			"revision": "b273f19621a28f627423f658e71e014f114dd53e",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/Azure/go-ansiterm",
+			"repository": "https://github.com/Azure/go-ansiterm",
+			"revision": "fa152c58bc15761d0200cb75fe958b89a9d4888e",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/SermoDigital/jose",
 			"repository": "https://github.com/SermoDigital/jose",
 			"revision": "472ccf5a9421093baa7d937fd0933915f9d500f4",
@@ -15,11 +47,304 @@
 			"path": "/jws"
 		},
 		{
+			"importpath": "github.com/Sirupsen/logrus",
+			"repository": "https://github.com/Sirupsen/logrus",
+			"revision": "1445b7a38228c041834afc69231b7966b9943397",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/blang/semver",
+			"repository": "https://github.com/blang/semver",
+			"revision": "60ec3488bfea7cca02b021d106d9911120d25fe9",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/bmizerany/pat",
+			"repository": "https://github.com/bmizerany/pat",
+			"revision": "c068ca2f0aacee5ac3681d68e4d0a003b7d1fd2c",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/cloudfoundry-incubator/cli-plugin-repo/web",
 			"repository": "https://github.com/cloudfoundry-incubator/cli-plugin-repo",
 			"revision": "333481fe1a0eaf18430875a6d648bb600786c863",
 			"branch": "master",
 			"path": "/web"
+		},
+		{
+			"importpath": "github.com/cloudfoundry-incubator/uaago",
+			"repository": "https://github.com/cloudfoundry-incubator/uaago",
+			"revision": "1db9cfd27865007e07ffd5914c0fdf5fb7fc09ba",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/cloudfoundry/dropsonde",
+			"repository": "https://github.com/cloudfoundry/dropsonde",
+			"revision": "279784cf062c0ca3200b27f906e8323cc586143d",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/cloudfoundry/go-ccapi/v3/client",
+			"repository": "https://github.com/cloudfoundry/go-ccapi",
+			"revision": "0c660fe3c4582af84ff3ff6ac81b956fde87c3c0",
+			"branch": "master",
+			"path": "/v3/client"
+		},
+		{
+			"importpath": "github.com/cloudfoundry/go-ccapi/v3/routing",
+			"repository": "https://github.com/cloudfoundry/go-ccapi",
+			"revision": "0c660fe3c4582af84ff3ff6ac81b956fde87c3c0",
+			"branch": "master",
+			"path": "/v3/routing"
+		},
+		{
+			"importpath": "github.com/cloudfoundry/gosteno",
+			"repository": "https://github.com/cloudfoundry/gosteno",
+			"revision": "0c8581caea35ac903728230e447792e2365dcc34",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/cloudfoundry/loggregator_consumer",
+			"repository": "https://github.com/cloudfoundry/loggregator_consumer",
+			"revision": "eef2afce51e4fa4d56ed94eb02c9bba38d7b4572",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/cloudfoundry/loggregatorlib/logmessage",
+			"repository": "https://github.com/cloudfoundry/loggregatorlib",
+			"revision": "ba73a44ee749635b2daa0820cc9dd4f17bf5db03",
+			"branch": "master",
+			"path": "/logmessage"
+		},
+		{
+			"importpath": "github.com/cloudfoundry/loggregatorlib/signature",
+			"repository": "https://github.com/cloudfoundry/loggregatorlib",
+			"revision": "ba73a44ee749635b2daa0820cc9dd4f17bf5db03",
+			"branch": "master",
+			"path": "/signature"
+		},
+		{
+			"importpath": "github.com/cloudfoundry/noaa",
+			"repository": "https://github.com/cloudfoundry/noaa",
+			"revision": "511efbc6fe105a8d256ede3ee47c7a972e6b0082",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/cloudfoundry/sonde-go/events",
+			"repository": "https://github.com/cloudfoundry/sonde-go",
+			"revision": "a8900cb06815469da901e8f3f6bbe15c9e798291",
+			"branch": "master",
+			"path": "/events"
+		},
+		{
+			"importpath": "github.com/davecgh/go-spew/spew",
+			"repository": "https://github.com/davecgh/go-spew",
+			"revision": "346938d642f2ec3594ed81d874461961cd0faa76",
+			"branch": "master",
+			"path": "/spew"
+		},
+		{
+			"importpath": "github.com/docker/docker/pkg/term",
+			"repository": "https://github.com/docker/docker",
+			"revision": "4c6db5d9cb4021dab3021008648d2d56f08792cd",
+			"branch": "master",
+			"path": "/pkg/term"
+		},
+		{
+			"importpath": "github.com/fatih/color",
+			"repository": "https://github.com/fatih/color",
+			"revision": "bf82308e8c8546dc2b945157173eb8a959ae9505",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/gogoproto",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "8d70fb3182befc465c4a1eac8ad4d38ff49778e2",
+			"branch": "master",
+			"path": "/gogoproto"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/proto",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "8d70fb3182befc465c4a1eac8ad4d38ff49778e2",
+			"branch": "master",
+			"path": "/proto"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/proto/testdata",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "8d70fb3182befc465c4a1eac8ad4d38ff49778e2",
+			"branch": "master",
+			"path": "/proto/testdata"
+		},
+		{
+			"importpath": "github.com/gogo/protobuf/protoc-gen-gogo/descriptor",
+			"repository": "https://github.com/gogo/protobuf",
+			"revision": "8d70fb3182befc465c4a1eac8ad4d38ff49778e2",
+			"branch": "master",
+			"path": "/protoc-gen-gogo/descriptor"
+		},
+		{
+			"importpath": "github.com/golang/protobuf/proto",
+			"repository": "https://github.com/golang/protobuf",
+			"revision": "2bc9827a78f95c6665b5fe0abd1fd66b496ae2d8",
+			"branch": "master",
+			"path": "/proto"
+		},
+		{
+			"importpath": "github.com/golang/protobuf/proto/testdata",
+			"repository": "https://github.com/golang/protobuf",
+			"revision": "2bc9827a78f95c6665b5fe0abd1fd66b496ae2d8",
+			"branch": "master",
+			"path": "/proto/testdata"
+		},
+		{
+			"importpath": "github.com/golang/protobuf/ptypes/any",
+			"repository": "https://github.com/golang/protobuf",
+			"revision": "2bc9827a78f95c6665b5fe0abd1fd66b496ae2d8",
+			"branch": "master",
+			"path": "/ptypes/any"
+		},
+		{
+			"importpath": "github.com/google/go-querystring/query",
+			"repository": "https://github.com/google/go-querystring",
+			"revision": "9235644dd9e52eeae6fa48efd539fdc351a0af53",
+			"branch": "master",
+			"path": "/query"
+		},
+		{
+			"importpath": "github.com/gorilla/websocket",
+			"repository": "https://github.com/gorilla/websocket",
+			"revision": "9fbf129ff2a3cf2467f7d0021de2eb4d3aecc109",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/jessevdk/go-flags",
+			"repository": "https://github.com/jessevdk/go-flags",
+			"revision": "8bc97d602c3bfeb5fc6fc9b5a9c898f245495637",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/mattn/go-colorable",
+			"repository": "https://github.com/mattn/go-colorable",
+			"revision": "d228849504861217f796da67fae4f6e347643f15",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/mattn/go-isatty",
+			"repository": "https://github.com/mattn/go-isatty",
+			"revision": "66b8e73f3f5cda9f96b69efd03dd3d7fc4a5cdb8",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/nicksnyder/go-i18n/i18n",
+			"repository": "https://github.com/nicksnyder/go-i18n",
+			"revision": "991e81cc94f6c54209edb3192cb98e3995ad71c1",
+			"branch": "master",
+			"path": "/i18n"
+		},
+		{
+			"importpath": "github.com/nu7hatch/gouuid",
+			"repository": "https://github.com/nu7hatch/gouuid",
+			"revision": "179d4d0c4d8d407a32af483c2354df1d2c91e6c3",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/onsi/ginkgo",
+			"repository": "https://github.com/onsi/ginkgo",
+			"revision": "c07a44f02cf4a895e331f4f473c0943ee116c668",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/onsi/gomega",
+			"repository": "https://github.com/onsi/gomega",
+			"revision": "ff4bc6b6f9f5affa66635cd04d31d2a7ee21ffd6",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/pmezard/go-difflib/difflib",
+			"repository": "https://github.com/pmezard/go-difflib",
+			"revision": "792786c7400a136282c1664665ae0a8db921c6c2",
+			"branch": "master",
+			"path": "/difflib"
+		},
+		{
+			"importpath": "github.com/sajari/fuzzy",
+			"repository": "https://github.com/sajari/fuzzy",
+			"revision": "243c923763cac789d1196949a834ca698dbd7a28",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/stretchr/testify/assert",
+			"repository": "https://github.com/stretchr/testify",
+			"revision": "976c720a22c8eb4eb6a0b4348ad85ad12491a506",
+			"branch": "master",
+			"path": "/assert"
+		},
+		{
+			"importpath": "github.com/tedsuo/ifrit",
+			"repository": "https://github.com/tedsuo/ifrit",
+			"revision": "6711154296c2b3fc5cd1932f0638c8ca0ce8a8a7",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/tedsuo/rata",
+			"repository": "https://github.com/tedsuo/rata",
+			"revision": "0649c23705dfb45a9693b668c4fc1c0666f485d9",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/vito/go-interact/interact",
+			"repository": "https://github.com/vito/go-interact",
+			"revision": "965b78fd2ce125500bf67529de7a88c0be18ac0c",
+			"branch": "master",
+			"path": "/interact"
+		},
+		{
+			"importpath": "golang.org/x/crypto/curve25519",
+			"repository": "https://go.googlesource.com/crypto",
+			"revision": "9477e0b78b9ac3d0b03822fd95422e2fe07627cd",
+			"branch": "master",
+			"path": "/curve25519"
+		},
+		{
+			"importpath": "golang.org/x/crypto/ed25519",
+			"repository": "https://go.googlesource.com/crypto",
+			"revision": "9477e0b78b9ac3d0b03822fd95422e2fe07627cd",
+			"branch": "master",
+			"path": "/ed25519"
+		},
+		{
+			"importpath": "golang.org/x/crypto/ssh",
+			"repository": "https://go.googlesource.com/crypto",
+			"revision": "9477e0b78b9ac3d0b03822fd95422e2fe07627cd",
+			"branch": "master",
+			"path": "/ssh"
+		},
+		{
+			"importpath": "golang.org/x/net/websocket",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "40d3034e575b6eafbca34e64224da61de35ae04c",
+			"branch": "master",
+			"path": "/websocket"
+		},
+		{
+			"importpath": "gopkg.in/airbrake/gobrake.v2",
+			"repository": "https://gopkg.in/airbrake/gobrake.v2",
+			"revision": "5d77bd50d083834501349f8be70197b26963674d",
+			"branch": "master"
+		},
+		{
+			"importpath": "gopkg.in/gemnasium/logrus-airbrake-hook.v2",
+			"repository": "https://gopkg.in/gemnasium/logrus-airbrake-hook.v2",
+			"revision": "bfee1239d796830ca346767650cce5ba90d58c57",
+			"branch": "master"
+		},
+		{
+			"importpath": "gopkg.in/yaml.v2",
+			"repository": "https://gopkg.in/yaml.v2",
+			"revision": "a5b47d31c556af34a302ce5d659e6fea44d90de0",
+			"branch": "v2"
 		}
 	]
 }

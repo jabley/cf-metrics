@@ -120,7 +120,7 @@ func NewRepoLocator(config coreconfig.Repository, info CFInfo, envDialTimeout st
 		"routing-api":      net.NewRoutingAPIGateway(config, time.Now, ui, logger, envDialTimeout),
 	}
 
-	return api.NewRepositoryLocator(config, gateways, logger), gateways["cloud-controller"]
+	return api.NewRepositoryLocator(config, gateways, logger, envDialTimeout), gateways["cloud-controller"]
 }
 
 func setAPIEndpoint(endpoint string, config coreconfig.ReadWriter, endpointRepo coreconfig.EndpointRepository) error {
