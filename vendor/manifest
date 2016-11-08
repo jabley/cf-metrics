@@ -1,0 +1,25 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/SermoDigital/jose",
+			"repository": "https://github.com/SermoDigital/jose",
+			"revision": "472ccf5a9421093baa7d937fd0933915f9d500f4",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/SermoDigital/jose/jws",
+			"repository": "https://github.com/SermoDigital/jose",
+			"revision": "472ccf5a9421093baa7d937fd0933915f9d500f4",
+			"branch": "master",
+			"path": "/jws"
+		},
+		{
+			"importpath": "github.com/cloudfoundry-incubator/cli-plugin-repo/web",
+			"repository": "https://github.com/cloudfoundry-incubator/cli-plugin-repo",
+			"revision": "333481fe1a0eaf18430875a6d648bb600786c863",
+			"branch": "master",
+			"path": "/web"
+		}
+	]
+}
