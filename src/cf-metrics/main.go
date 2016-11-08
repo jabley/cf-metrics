@@ -2,59 +2,80 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
+	"fmt"
+	"io"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"time"
 
-	"code.cloudfoundry.org/cli/cf/api"
-	"code.cloudfoundry.org/cli/cf/api/authentication"
-	"code.cloudfoundry.org/cli/cf/api/organizations"
-	"code.cloudfoundry.org/cli/cf/api/spaces"
-	"code.cloudfoundry.org/cli/cf/configuration/coreconfig"
-	"code.cloudfoundry.org/cli/cf/net"
+	"code.cloudfoundry.org/cli/cf/api/appinstances"
+	"code.cloudfoundry.org/cli/cf/i18n"
+	"code.cloudfoundry.org/cli/cf/models"
+	"code.cloudfoundry.org/cli/cf/terminal"
+	"code.cloudfoundry.org/cli/cf/trace"
+	"code.cloudfoundry.org/cli/utils/config"
 )
 
-type CFInfo struct {
-	prefix   string
-	API      string
-	username string
-	password string
-}
+var _ = initI18nFunc()
 
-type Zone struct {
-	config        coreconfig.ReadWriter
-	authenticator authentication.Repository
-	endpointRepo  coreconfig.EndpointRepository
-	orgRepo       organizations.OrganizationRepository
-	spaceRepo     spaces.SpaceRepository
-}
-
-// See: http://stackoverflow.com/questions/7922270/obtain-users-home-directory
-// we can't cross compile using cgo and use user.Current()
-var userHomeDir = func() string {
-
-	if runtime.GOOS == "windows" {
-		home := os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
-		if home == "" {
-			home = os.Getenv("USERPROFILE")
-		}
-		return home
+func initI18nFunc() bool {
+	config, err := config.LoadConfig()
+	if err != nil {
+		fmt.Println(terminal.FailureColor("FAILED"))
+		fmt.Println("Error read/writing config: ", err.Error())
+		os.Exit(1)
 	}
+	i18n.T = i18n.Init(config)
+	return true
+}
 
-	return os.Getenv("HOME")
+type CFInfo struct {
+	ZoneName string
+	Prefix   string
+	API      string
+	Username string
+	Password string
+}
+
+func (i CFInfo) String() string {
+	return fmt.Sprintf("{Prefix: %s, API: <%s>, Username: <%s>}", i.Prefix, i.API, i.Username)
 }
 
 type AppMetrics struct {
+	Zone      string    `json:"zone"`
+	Space     string    `json:"space"`
+	Name      string    `json:"name"`
+	Timestamp time.Time `json:"timestamp"`
+	Stats     appinstances.StatsAPIResponse
+	// TODO add events as well
 }
 
 func main() {
-	// check that we have one or more CFs to poll
-	//
+	var (
+		verbose bool
+	)
+
+	flag.BoolVar(&verbose, "verbose", false, "Enable verbose logging")
+
+	flag.Usage = func() {
+		basename := filepath.Base(os.Args[0])
+		fmt.Printf("Usage: %s\n", basename)
+		fmt.Printf("\n"+
+			"ZONE_PREFIXES – the environment variable that contains a CSV list of prefixes\n"+
+			"for ENV vars that can be used for authenticating with a Cloud Foundry\n"+
+			"\nFor example:\n\n> env ZONE_PREFIXES=PWS PWS_USERNAME=someuser@example.com \\\n"+
+			"  PWS_API=https://api.run.pivotal.io \\\n  PWS_PASSWORD=some-complex-passphrase %s\n\n", basename)
+		flag.PrintDefaults()
+	}
+
+	flag.Parse()
 	zones := parseZones()
 
+	// check that we have one or more CFs to poll
 	if len(zones) == 0 {
+		flag.Usage()
 		os.Exit(1)
 	}
 
@@ -68,53 +89,113 @@ func main() {
 
 	metrics := make(chan AppMetrics)
 
-	// wg := &sync.WaitGroup{}
-	// wg.Add(1)
-	spawnWorkers(zones, metrics)
+	writer := os.Stdout
+
+	logger := trace.NewLogger(writer, verbose, os.Getenv("CF_TRACE"), "")
+
+	spawnWorkers(zones, metrics, writer, logger)
 
 	for m := range metrics {
 		logMetric(m)
 	}
-	// wg.Wait()
 }
 
-func spawnWorkers(cfInfos []CFInfo, metrics chan AppMetrics) {
-	zones := make([]Zone, len(cfInfos))
-
-	homeDir := userHomeDir()
-	errorHandler := func(err error) {
-	}
-
-	for i, info := range cfInfos {
-		// Ensure we can login to each zone
-		zones[i] = Zone{}
-		configPath := filepath.Join(homeDir, "."+info.prefix, "config.json")
-
-		gateways := make(map[string]net.Gateway)
-		zones[i].config = coreconfig.NewRepositoryFromFilepath(configPath, errorHandler)
-		repoLocator := api.NewRepositoryLocator(zones[i].config, gateways, nil)
-		zones[i].authenticator = repoLocator.GetAuthenticationRepository()
-		zones[i].endpointRepo = repoLocator.GetEndpointRepository()
-		zones[i].orgRepo = repoLocator.GetOrganizationRepository()
-		zones[i].spaceRepo = repoLocator.GetSpaceRepository()
-	}
+func spawnWorkers(cfInfos []CFInfo,
+	metrics chan AppMetrics,
+	writer io.Writer,
+	logger trace.Printer) {
+	zones := NewZones(cfInfos, writer, logger)
 
 	for _, zone := range zones {
-		go workLoop(zone, metrics)
+		go readSpacesLoop(&zone)
+		go readMetricsLoop(&zone, metrics)
 	}
 }
 
-func workLoop(zone Zone, metrics chan AppMetrics) {
-	t := time.NewTicker(time.Duration(10) * time.Second)
+func readSpacesLoop(zone *Zone) {
+	t := time.NewTicker(time.Duration(1) * time.Minute)
+
+	// channel used to do the initial poll
+	start := make(chan struct{})
+
+	// This one weird trick to do the initial poll
+	go func() {
+		start <- struct{}{}
+	}()
 
 	for {
 		select {
+		case <-start:
+			pollSpaces(zone)
 		case <-t.C:
-			//	for each zone
-			//		for each org
-			// 			for each space
-			//				for each app
-			//					fetch metrics
+			pollSpaces(zone)
+		}
+	}
+}
+
+// pollSpaces takes a pointer to the Zone, since it needs to update the spaces map.
+func pollSpaces(zone *Zone) {
+	spaces := make(map[string]string)
+
+	err := zone.spaceRepo.ListSpaces(func(space models.Space) bool {
+		spaces[space.GUID] = space.Name
+		return true
+	})
+
+	if err != nil {
+		// We'll try again later.
+		return
+	}
+
+	zone.muSpaces.Lock()
+	defer zone.muSpaces.Unlock()
+	zone.spaces = spaces
+}
+
+func readMetricsLoop(zone *Zone, metrics chan AppMetrics) {
+	t := time.NewTicker(time.Duration(10) * time.Second)
+
+	// channel used to do the initial poll
+	start := make(chan struct{})
+
+	// This one weird trick to do the initial poll
+	go func() {
+		start <- struct{}{}
+	}()
+
+	for {
+		select {
+		case <-start:
+			pollMetrics(zone, metrics)
+		case <-t.C:
+			pollMetrics(zone, metrics)
+		}
+	}
+}
+
+func pollMetrics(zone *Zone, metrics chan AppMetrics) {
+	now := time.Now()
+	err := zone.appRepo.ListApps(func(app models.Application) bool {
+		if app.State == models.ApplicationStateStarted {
+			go fetchStats(app, zone, metrics, now)
+		}
+		return true
+	})
+
+	if err != nil {
+		// Soft log it? Potentially a zone might have transient problems / scheduled maintenance.
+	}
+}
+
+func fetchStats(app models.Application, zone *Zone, metrics chan AppMetrics, now time.Time) {
+	stats, err := zone.appRepo.GetAppStats(app)
+	if err == nil {
+		metrics <- AppMetrics{
+			Zone:      zone.name,
+			Name:      app.Name,
+			Timestamp: now,
+			Stats:     stats,
+			Space:     zone.GetSpaceName(app.SpaceGUID),
 		}
 	}
 }
@@ -131,18 +212,15 @@ func parseZones() []CFInfo {
 		username := getDefaultConfig(prefix+"_USERNAME", "")
 		password := getDefaultConfig(prefix+"_PASSWORD", "")
 		api := getDefaultConfig(prefix+"_API", "")
+		zoneName := getDefaultConfig(prefix+"_NAME", prefix)
 
-		zones = append(zones, CFInfo{prefix: prefix,
+		zones = append(zones, CFInfo{
+			ZoneName: zoneName,
+			Prefix:   prefix,
 			API:      api,
-			username: username,
-			password: password})
+			Username: username,
+			Password: password,
+		})
 	}
 	return zones
-}
-
-func getDefaultConfig(name, fallback string) string {
-	if val := os.Getenv(name); val != "" {
-		return val
-	}
-	return fallback
 }
