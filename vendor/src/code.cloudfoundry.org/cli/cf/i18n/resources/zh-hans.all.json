@@ -328,6 +328,10 @@
     "translation": "应用程序 {{.AppName}} 已绑定到 {{.ServiceName}}。"
   },
   {
+    "id": "App {{.AppName}} not found",
+    "translation": ""
+  },
+  {
     "id": "Append API request diagnostics to a log file",
     "translation": "将 API 请求诊断附加到日志文件"
   },
@@ -876,7 +880,7 @@
     "translation": ""
   },
   {
-    "id": "CF_NAME delete-space SPACE [-f]",
+    "id": "CF_NAME delete-space SPACE [-o ORG] [-f]",
     "translation": ""
   },
   {
@@ -1177,6 +1181,10 @@
   },
   {
     "id": "CF_NAME routes [--orglevel]",
+    "translation": ""
+  },
+  {
+    "id": "CF_NAME run-task APP_NAME COMMAND\\n\\nEXAMPLES:\\n   CF_NAME run-task my-app \\\"bundle exec rake db:migrate\\\"",
     "translation": ""
   },
   {
@@ -1928,6 +1936,10 @@
     "translation": "正在以 {{.CurrentUser}} 身份在组织 {{.OrgName}} 中创建空间 {{.SpaceName}}..."
   },
   {
+    "id": "Creating task for app {{.AppName}} in org {{.OrgName}} / space {{.SpaceName}} as {{.CurrentUser}}...",
+    "translation": ""
+  },
+  {
     "id": "Creating user provided service {{.ServiceName}} in org {{.OrgName}} / space {{.SpaceName}} as {{.CurrentUser}}...",
     "translation": "正在以 {{.CurrentUser}} 身份在组织 {{.OrgName}}/空间 {{.SpaceName}} 中创建用户提供的服务 {{.ServiceName}}..."
   },
@@ -2068,6 +2080,10 @@
     "translation": "删除操作已取消"
   },
   {
+    "id": "Delete space within specified org",
+    "translation": ""
+  },
+  {
     "id": "Deletes a security group",
     "translation": "删除安全组"
   },
@@ -2094,6 +2110,10 @@
   {
     "id": "Deleting quota {{.QuotaName}} as {{.Username}}...",
     "translation": "正在以 {{.Username}} 身份删除配额 {{.QuotaName}}..."
+  },
+  {
+    "id": "Deleting route {{.Route}} ...",
+    "translation": ""
   },
   {
     "id": "Deleting route {{.Route}}...",
@@ -2876,6 +2896,10 @@
     "translation": "正在以 {{.Username}} 身份获取路由器组...\n"
   },
   {
+    "id": "Getting routes as {{.CurrentUser}} ...",
+    "translation": ""
+  },
+  {
     "id": "Getting routes as {{.Username}} ...\n",
     "translation": "正在以 {{.Username}} 身份获取路径...\n"
   },
@@ -3580,6 +3604,10 @@
     "translation": "buildpack 编译打包的最长等待时间（分钟）"
   },
   {
+    "id": "Max wait time to establish a connection, including name resolution, in seconds",
+    "translation": ""
+  },
+  {
     "id": "Maximum amount of memory an application instance can have (e.g. 1024M, 1G, 10G)",
     "translation": "应用程序实例可以具有的最大内存量（例如，1024M、1G、10G）"
   },
@@ -3992,6 +4020,14 @@
     "translation": "清单路径"
   },
   {
+    "id": "Path used in combination with HOSTNAME and DOMAIN to specify the route to bind",
+    "translation": ""
+  },
+  {
+    "id": "Path used in combination with HOSTNAME and DOMAIN to specify the route to unbind",
+    "translation": ""
+  },
+  {
     "id": "Path used to identify the HTTP route",
     "translation": "用于识别 HTTP 路径的路径"
   },
@@ -4180,6 +4216,10 @@
     "translation": "对组织信息和报告具有只读访问权\n"
   },
   {
+    "id": "Really delete orphaned routes?",
+    "translation": ""
+  },
+  {
     "id": "Really delete orphaned routes?{{.Prompt}}",
     "translation": "真的要删除孤立的路径吗？{{.Prompt}}"
   },
@@ -4206,6 +4246,10 @@
   {
     "id": "Received invalid SSL certificate from ",
     "translation": "从以下源收到的 SSL 证书无效"
+  },
+  {
+    "id": "Recreate the app's executable artifact using the latest pushed app files and the latest environment (variables, service bindings, buildpack, stack, etc.)",
+    "translation": ""
   },
   {
     "id": "Recursively remove a service and child objects from Cloud Foundry database without making requests to a service broker",
@@ -4464,6 +4508,10 @@
     "translation": "规则"
   },
   {
+    "id": "Run a one-off task on an app",
+    "translation": ""
+  },
+  {
     "id": "Running Environment Variable Groups:",
     "translation": "运行环境变量组: "
   },
@@ -4606,6 +4654,10 @@
   {
     "id": "Service instance {{.ServiceInstanceName}} does not exist.",
     "translation": "服务实例 {{.ServiceInstanceName}} 不存在。"
+  },
+  {
+    "id": "Service instance {{.ServiceInstance}} not found",
+    "translation": ""
   },
   {
     "id": "Service instance: {{.ServiceName}}",
@@ -4856,6 +4908,10 @@
     "translation": "状态: {{.State}}"
   },
   {
+    "id": "Stop all instances of the app, then start them again. This may cause downtime.",
+    "translation": ""
+  },
+  {
     "id": "Stop an app",
     "translation": "停止应用程序"
   },
@@ -4932,6 +4988,10 @@
     "translation": "目标空间 {{.SpaceName}}\n"
   },
   {
+    "id": "Task {{.TaskSequenceID}} has been submitted successfully for execution.",
+    "translation": ""
+  },
+  {
     "id": "Terminate the running application Instance at the given index and instantiate a new instance of the application with the same index",
     "translation": "在给定索引处终止运行中应用程序实例，并使用相同索引对应用程序的新实例进行实例化"
   },
@@ -4969,6 +5029,10 @@
   },
   {
     "id": "The command name",
+    "translation": ""
+  },
+  {
+    "id": "The command to execute",
     "translation": ""
   },
   {
@@ -5246,6 +5310,10 @@
   {
     "id": "This domain is shared across all orgs.\nDeleting it will remove all associated routes, and will make any app with this domain unreachable.\nAre you sure you want to delete the domain {{.DomainName}}? ",
     "translation": "此域在所有组织之间共享。\n将其删除会除去所有关联的路径，并将导致使用此域的任何应用程序都不可访问。\n确定要删除域 {{.DomainName}} 吗？"
+  },
+  {
+    "id": "This is for backwards compatibility",
+    "translation": ""
   },
   {
     "id": "This service doesn't support creation of keys.",
