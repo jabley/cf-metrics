@@ -106,7 +106,8 @@ func spawnWorkers(cfInfos []CFInfo,
 	logger trace.Printer) {
 	zones := NewZones(cfInfos, writer, logger)
 
-	for _, zone := range zones {
+	for _, each := range zones {
+		zone := each
 		go readSpacesLoop(&zone)
 		go readMetricsLoop(&zone, metrics)
 	}
