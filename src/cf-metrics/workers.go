@@ -123,9 +123,11 @@ func cfStatsToExternalStats(stats appinstances.StatsAPIResponse) (res Stats) {
 				DiskQuota: v.Stats.DiskQuota,
 				MemQuota:  v.Stats.MemQuota,
 				Usage: Usage{
-					CPU:  v.Stats.Usage.CPU,
-					Disk: v.Stats.Usage.Disk,
-					Mem:  v.Stats.Usage.Mem,
+					CPU:       v.Stats.Usage.CPU,
+					Disk:      v.Stats.Usage.Disk,
+					Mem:       v.Stats.Usage.Mem,
+					DiskUsage: (float64(v.Stats.Usage.Disk) / float64(v.Stats.DiskQuota)),
+					MemUsage:  (float64(v.Stats.Usage.Mem) / float64(v.Stats.MemQuota)),
 				},
 			},
 		}

@@ -54,9 +54,11 @@ type AppMetrics struct {
 }
 
 type Usage struct {
-	CPU  float64 `json:"cpu"`
-	Disk int64   `json:"disk"`
-	Mem  int64   `json:"mem"`
+	CPU       float64 `json:"cpu"`
+	Disk      int64   `json:"disk"`
+	Mem       int64   `json:"mem"`
+	DiskUsage float64 `json:"disk-usage"`
+	MemUsage  float64 `json:"mem-usage"`
 }
 
 type ContainerStats struct {
