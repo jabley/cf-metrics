@@ -41,6 +41,7 @@ type Zone struct {
 	repoLocator api.RepositoryLocator
 	appRepo     AppRepo
 	spaceRepo   SpaceRepo
+	eventRepo   EventRepo
 
 	muSpaces sync.RWMutex
 	spaces   map[string]string
@@ -86,6 +87,7 @@ func NewZones(cfInfos []CFInfo, writer io.Writer, logger trace.Printer) []Zone {
 			repoLocator: repoLocator,
 			appRepo:     NewAppRepo(config, cloudController),
 			spaceRepo:   NewSpaceRepo(config, cloudController),
+			eventRepo:   NewEventRepo(config, cloudController),
 		})
 	}
 

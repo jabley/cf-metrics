@@ -8,16 +8,13 @@ import (
 	"code.cloudfoundry.org/cli/cf/trace"
 )
 
-func spawnWorkers(cfInfos []CFInfo,
-	metrics chan AppMetrics,
-	writer io.Writer,
-	logger trace.Printer) {
+func spawnWorkers(cfInfos []CFInfo, metrics chan AppMetrics, events chan Event, writer io.Writer, logger trace.Printer) {
 	zones := NewZones(cfInfos, writer, logger)
 
 	for _, each := range zones {
 		zone := each
 		go readSpacesLoop(&zone)
-		go readAppsLoop(&zone, metrics)
+		go readAppsLoop(&zone, metrics, events)
 	}
 }
 
@@ -61,8 +58,10 @@ func pollSpaces(zone *Zone) {
 	zone.spaces = spaces
 }
 
-func readAppsLoop(zone *Zone, metrics chan AppMetrics) {
+func readAppsLoop(zone *Zone, metrics chan AppMetrics, events chan Event) {
 	t := time.NewTicker(time.Duration(10) * time.Second)
+
+	since := time.Now()
 
 	// channel used to do the initial poll
 	start := make(chan struct{})
@@ -75,19 +74,22 @@ func readAppsLoop(zone *Zone, metrics chan AppMetrics) {
 	for {
 		select {
 		case <-start:
-			pollApps(zone, metrics)
+			pollApps(zone, since, metrics, events)
+			since = time.Now()
 		case <-t.C:
-			pollApps(zone, metrics)
+			pollApps(zone, since, metrics, events)
+			since = time.Now()
 		}
 	}
 }
 
-func pollApps(zone *Zone, metrics chan AppMetrics) {
+func pollApps(zone *Zone, since time.Time, metrics chan AppMetrics, events chan Event) {
 	now := time.Now()
 	err := zone.appRepo.ListApps(func(app models.Application) bool {
 		if app.State == models.ApplicationStateStarted {
 			go fetchStats(app, zone, metrics, now)
 		}
+		go fetchEvents(app, zone, events, now, since)
 		return true
 	})
 
@@ -100,11 +102,35 @@ func fetchStats(app models.Application, zone *Zone, metrics chan AppMetrics, now
 	stats, err := zone.appRepo.GetAppStats(app)
 	if err == nil {
 		metrics <- AppMetrics{
-			Zone:      zone.name,
-			Name:      app.Name,
+			Metric: Metric{
+				Zone:  zone.name,
+				Space: zone.GetSpaceName(app.SpaceGUID),
+				App:   app.Name,
+				Type:  "metric",
+			},
 			Timestamp: now,
 			Stats:     stats,
-			Space:     zone.GetSpaceName(app.SpaceGUID),
 		}
+	}
+}
+
+func fetchEvents(app models.Application, zone *Zone, events chan Event, now time.Time, since time.Time) {
+	err := zone.eventRepo.GetAppEvents(app, since, func(e models.EventFields) bool {
+		events <- Event{
+			Metric: Metric{
+				Zone:  zone.name,
+				Space: zone.GetSpaceName(app.SpaceGUID),
+				App:   app.Name,
+				Type:  "event",
+			},
+			EventInfo: EventInfo{
+				Type:      e.Name,
+				Timestamp: e.Timestamp,
+			},
+		}
+		return true
+	})
+	if err == nil {
+		// Soft log it? Potentially a zone might have transient problems / scheduled maintenance.
 	}
 }

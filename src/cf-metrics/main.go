@@ -41,13 +41,29 @@ func (i CFInfo) String() string {
 	return fmt.Sprintf("{Prefix: %s, API: <%s>, Username: <%s>}", i.Prefix, i.API, i.Username)
 }
 
+type Metric struct {
+	Zone  string `json:"zone"`
+	Space string `json:"space"`
+	App   string `json:"app"`
+	Type  string `json:"type"`
+}
+
 type AppMetrics struct {
-	Zone      string    `json:"zone"`
-	Space     string    `json:"space"`
-	Name      string    `json:"name"`
+	Metric
 	Timestamp time.Time `json:"timestamp"`
 	Stats     appinstances.StatsAPIResponse
-	// TODO add events as well
+}
+
+type EventInfo struct {
+	Type      string
+	Timestamp time.Time
+}
+
+type Event struct {
+	Metric
+	Type      string    `json:"type"`
+	Timestamp time.Time `json:"timestamp"`
+	EventInfo
 }
 
 func main() {
@@ -79,22 +95,29 @@ func main() {
 
 	encoder := json.NewEncoder(os.Stdout)
 
-	logMetric := func(metrics AppMetrics) {
-		if err := encoder.Encode(metrics); err != nil {
+	logItem := func(item interface{}) {
+		if err := encoder.Encode(item); err != nil {
 			panic(err)
 		}
 	}
 
 	metrics := make(chan AppMetrics)
+	events := make(chan Event)
 
 	writer := os.Stdout
 
 	logger := trace.NewLogger(writer, verbose, os.Getenv("CF_TRACE"), "")
 
-	spawnWorkers(zones, metrics, writer, logger)
+	spawnWorkers(zones, metrics, events, writer, logger)
+
+	go func() {
+		for e := range events {
+			logItem(e)
+		}
+	}()
 
 	for m := range metrics {
-		logMetric(m)
+		logItem(m)
 	}
 }
 
