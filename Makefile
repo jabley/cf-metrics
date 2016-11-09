@@ -3,6 +3,9 @@
 build: test
 		gb build all
 
+linux: test
+	env GOOS=linux GOARCH=amd64 gb build all
+
 test: -deps fmt
 	gb test all
 
