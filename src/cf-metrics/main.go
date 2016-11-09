@@ -42,28 +42,26 @@ func (i CFInfo) String() string {
 }
 
 type Metric struct {
-	Zone  string `json:"zone"`
-	Space string `json:"space"`
-	App   string `json:"app"`
-	Type  string `json:"type"`
+	Zone      string    `json:"zone"`
+	Space     string    `json:"space"`
+	App       string    `json:"app"`
+	Type      string    `json:"type"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
 type AppMetrics struct {
 	Metric
-	Timestamp time.Time `json:"timestamp"`
-	Stats     appinstances.StatsAPIResponse
+	Stats appinstances.StatsAPIResponse
 }
 
 type EventInfo struct {
-	Type      string
-	Timestamp time.Time
+	Type      string    `json:"type"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
 type Event struct {
 	Metric
-	Type      string    `json:"type"`
-	Timestamp time.Time `json:"timestamp"`
-	EventInfo
+	EventInfo EventInfo
 }
 
 func main() {

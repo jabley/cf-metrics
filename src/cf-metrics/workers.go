@@ -103,13 +103,13 @@ func fetchStats(app models.Application, zone *Zone, metrics chan AppMetrics, now
 	if err == nil {
 		metrics <- AppMetrics{
 			Metric: Metric{
-				Zone:  zone.name,
-				Space: zone.GetSpaceName(app.SpaceGUID),
-				App:   app.Name,
-				Type:  "metric",
+				Zone:      zone.name,
+				Space:     zone.GetSpaceName(app.SpaceGUID),
+				App:       app.Name,
+				Type:      "metric",
+				Timestamp: now,
 			},
-			Timestamp: now,
-			Stats:     stats,
+			Stats: stats,
 		}
 	}
 }
@@ -118,10 +118,11 @@ func fetchEvents(app models.Application, zone *Zone, events chan Event, now time
 	err := zone.eventRepo.GetAppEvents(app, since, func(e models.EventFields) bool {
 		events <- Event{
 			Metric: Metric{
-				Zone:  zone.name,
-				Space: zone.GetSpaceName(app.SpaceGUID),
-				App:   app.Name,
-				Type:  "event",
+				Zone:      zone.name,
+				Space:     zone.GetSpaceName(app.SpaceGUID),
+				App:       app.Name,
+				Type:      "event",
+				Timestamp: now,
 			},
 			EventInfo: EventInfo{
 				Type:      e.Name,
