@@ -1,7 +1,7 @@
 .PHONY: test build fmt help
 
 build: test
-		gb build all
+	gb build all
 
 linux: test
 	env GOOS=linux GOARCH=amd64 gb build all
