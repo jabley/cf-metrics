@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"code.cloudfoundry.org/cli/cf/api/appinstances"
 	"code.cloudfoundry.org/cli/cf/i18n"
 	"code.cloudfoundry.org/cli/cf/terminal"
 	"code.cloudfoundry.org/cli/cf/trace"
@@ -51,8 +50,26 @@ type Metric struct {
 
 type AppMetrics struct {
 	Metric
-	Stats appinstances.StatsAPIResponse
+	Stats Stats `json:"stats,omitempty"`
 }
+
+type Usage struct {
+	CPU  float64 `json:"cpu"`
+	Disk int64   `json:"disk"`
+	Mem  int64   `json:"mem"`
+}
+
+type ContainerStats struct {
+	DiskQuota int64 `json:"disk-quota"`
+	MemQuota  int64 `json:"mem-quota"`
+	Usage     Usage `json:"usage"`
+}
+
+type InstanceStats struct {
+	Stats ContainerStats `json:"stats"`
+}
+
+type Stats map[string]InstanceStats
 
 type EventInfo struct {
 	Type      string    `json:"type"`
