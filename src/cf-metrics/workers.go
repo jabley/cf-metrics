@@ -4,6 +4,7 @@ import (
 	"io"
 	"time"
 
+	"code.cloudfoundry.org/cli/cf/api/appinstances"
 	"code.cloudfoundry.org/cli/cf/models"
 	"code.cloudfoundry.org/cli/cf/trace"
 )
@@ -109,9 +110,29 @@ func fetchStats(app models.Application, zone *Zone, metrics chan AppMetrics, now
 				Type:      "metric",
 				Timestamp: now,
 			},
-			Stats: stats,
+			Stats: cfStatsToExternalStats(stats),
 		}
 	}
+}
+
+func cfStatsToExternalStats(stats appinstances.StatsAPIResponse) (res Stats) {
+	res = make(Stats)
+	for k, v := range stats {
+		res[k] = InstanceStats{
+			Stats: ContainerStats{
+				DiskQuota: v.Stats.DiskQuota,
+				MemQuota:  v.Stats.MemQuota,
+				Usage: Usage{
+					CPU:       v.Stats.Usage.CPU,
+					Disk:      v.Stats.Usage.Disk,
+					Mem:       v.Stats.Usage.Mem,
+					DiskUsage: (float64(v.Stats.Usage.Disk) / float64(v.Stats.DiskQuota)),
+					MemUsage:  (float64(v.Stats.Usage.Mem) / float64(v.Stats.MemQuota)),
+				},
+			},
+		}
+	}
+	return
 }
 
 func fetchEvents(app models.Application, zone *Zone, events chan Event, now time.Time, since time.Time) {
