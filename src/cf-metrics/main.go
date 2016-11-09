@@ -96,10 +96,17 @@ func main() {
 		basename := filepath.Base(os.Args[0])
 		fmt.Printf("Usage: %s\n", basename)
 		fmt.Printf("\n"+
-			"ZONE_PREFIXES – the environment variable that contains a CSV list of prefixes\n"+
-			"for ENV vars that can be used for authenticating with a Cloud Foundry\n"+
-			"\nFor example:\n\n> env ZONE_PREFIXES=PWS PWS_USERNAME=someuser@example.com \\\n"+
-			"  PWS_API=https://api.run.pivotal.io \\\n  PWS_PASSWORD=some-complex-passphrase %s\n\n", basename)
+			"ZONE_PREFIXES – the environment variable that contains a comma-separated list of\n"+
+			"prefixes for ENV vars that can be used for authenticating with a Cloud Foundry\n"+
+			"provider.\n"+
+			"\nFor example:\n\n> env ZONE_PREFIXES=PWS,CH PWS_USERNAME=user@example.com \\\n"+
+			"PWS_PASSWORD='some-passphrase' \\\n"+
+			"PWS_API=https://api.run.pivotal.io \\\n"+
+			"PWS_NAME=pivotal \\\n"+
+			"CH_USERNAME=user@example.com \\\n"+
+			"CH_PASSWORD='some-other-passphrase' \\\n"+
+			"CH_API=https://api.lyra-836.appcloud.swisscom.com \\\n"+
+			"CH_NAME=swisscom %s\n\nOther arguments:\n\n", basename)
 		flag.PrintDefaults()
 	}
 
