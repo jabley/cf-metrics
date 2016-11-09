@@ -43,6 +43,8 @@ type Zone struct {
 	spaceRepo   SpaceRepo
 	eventRepo   EventRepo
 
+	whitelist map[string]bool
+
 	muSpaces sync.RWMutex
 	spaces   map[string]string
 }
@@ -58,12 +60,24 @@ func (z Zone) GetSpaceName(guid string) string {
 	return guid
 }
 
-func NewZones(cfInfos []CFInfo, writer io.Writer, logger trace.Printer) []Zone {
+func (z Zone) IncludesApp(name string) bool {
+	if len(z.whitelist) == 0 {
+		return true
+	}
+
+	_, isPresent := z.whitelist[name]
+
+	return isPresent
+}
+
+func NewZones(cfInfos []CFInfo, whitelist string, writer io.Writer, logger trace.Printer) []Zone {
 	zones := make([]Zone, 0)
 
 	homeDir := userHomeDir()
 	errorHandler := func(err error) {
 	}
+
+	appWhitelist := parseWhitelist(whitelist)
 
 	teePrinter := terminal.NewTeePrinter(writer)
 	envDialTimeout := getDefaultConfig("CF_DIAL_TIMEOUT", "5")
@@ -88,10 +102,28 @@ func NewZones(cfInfos []CFInfo, writer io.Writer, logger trace.Printer) []Zone {
 			appRepo:     NewAppRepo(config, cloudController),
 			spaceRepo:   NewSpaceRepo(config, cloudController),
 			eventRepo:   NewEventRepo(config, cloudController),
+			whitelist:   appWhitelist,
 		})
 	}
 
 	return zones
+}
+
+func parseWhitelist(whitelist string) (res map[string]bool) {
+	res = make(map[string]bool)
+
+	if len(whitelist) == 0 {
+		return
+	}
+
+	apps := strings.Split(whitelist, ",")
+
+	for _, a := range apps {
+		if len(a) != 0 {
+			res[a] = true
+		}
+	}
+	return
 }
 
 func verifyLogin(repoLocator api.RepositoryLocator, info CFInfo) {

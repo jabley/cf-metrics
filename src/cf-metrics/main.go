@@ -85,10 +85,12 @@ type Event struct {
 
 func main() {
 	var (
-		verbose bool
+		verbose   bool
+		whitelist string
 	)
 
 	flag.BoolVar(&verbose, "verbose", false, "Enable verbose logging")
+	flag.StringVar(&whitelist, "whitelist", "", "A comma-separated list of app names to collect data about. If none specified, then defaults to all apps that the account can view.")
 
 	flag.Usage = func() {
 		basename := filepath.Base(os.Args[0])
@@ -125,7 +127,7 @@ func main() {
 
 	logger := trace.NewLogger(writer, verbose, os.Getenv("CF_TRACE"), "")
 
-	spawnWorkers(zones, metrics, events, writer, logger)
+	spawnWorkers(zones, whitelist, metrics, events, writer, logger)
 
 	go func() {
 		for e := range events {

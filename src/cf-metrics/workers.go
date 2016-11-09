@@ -9,8 +9,8 @@ import (
 	"code.cloudfoundry.org/cli/cf/trace"
 )
 
-func spawnWorkers(cfInfos []CFInfo, metrics chan AppMetrics, events chan Event, writer io.Writer, logger trace.Printer) {
-	zones := NewZones(cfInfos, writer, logger)
+func spawnWorkers(cfInfos []CFInfo, whitelist string, metrics chan AppMetrics, events chan Event, writer io.Writer, logger trace.Printer) {
+	zones := NewZones(cfInfos, whitelist, writer, logger)
 
 	for _, each := range zones {
 		zone := each
@@ -87,6 +87,9 @@ func readAppsLoop(zone *Zone, metrics chan AppMetrics, events chan Event) {
 func pollApps(zone *Zone, since time.Time, metrics chan AppMetrics, events chan Event) {
 	now := time.Now()
 	err := zone.appRepo.ListApps(func(app models.Application) bool {
+		if !zone.IncludesApp(app.Name) {
+			return true
+		}
 		if app.State == models.ApplicationStateStarted {
 			go fetchStats(app, zone, metrics, now)
 		}
