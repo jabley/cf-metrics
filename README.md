@@ -19,7 +19,7 @@ CH_NAME=swisscom \
 cf-metrics
 ```
 
-That will run cf-metrics, pointing at PWS and Swisscom public Cloud Foundry
+That will run `cf-metrics`, pointing at PWS and Swisscom public Cloud Foundry
 instances. It will poll every 10 seconds, checking all of the apps that account
 can see for cpu and memory metrics.
 
@@ -86,7 +86,7 @@ those by running `cf-metrics` in multiple locations, and feed all of the logs
 into a single location.
 
 It will also poll every 1 minute, looking for events that have happened for each
-application (such as process crash, restart) since cf-metrics began polling.
+application (such as process crash, restart) since `cf-metrics` began polling.
 
 For each application, these events will be emitted as:
 
