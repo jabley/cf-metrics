@@ -27,14 +27,14 @@ For each application, these will be emitted as:
 
 ```json
 {
-	"zone":"PWS",
-	"space":"development",
-	"app":"hello-python-web",
-	"type":"metric",
-	"timestamp":"2016-11-09T10:56:06.711449498Z",
-	"Stats":{
-		"0":{
-			"Stats":{
+  "zone":"PWS",
+  "space":"development",
+  "app":"hello-python-web",
+  "type":"metric",
+  "timestamp":"2016-11-09T10:56:06.711449498Z",
+  "Stats":{
+    "0":{
+      "Stats":{
         "disk_quota":536870912,
         "mem_quota":402653184,
         "Usage":{
@@ -43,9 +43,9 @@ For each application, these will be emitted as:
           "Mem":338554880
         }
       }
-		},
-		"1":{
-			"Stats":{
+    },
+    "1":{
+      "Stats":{
         "disk_quota":536870912,
         "mem_quota":402653184,
         "Usage":{
@@ -54,9 +54,9 @@ For each application, these will be emitted as:
           "Mem":256016384
         }
       }
-		},
-		"2":{
-			"Stats":{
+    },
+    "2":{
+      "Stats":{
         "disk_quota":536870912,
         "mem_quota":402653184,
         "Usage":{
@@ -65,9 +65,9 @@ For each application, these will be emitted as:
           "Mem":317755392
         }
       }
-		},
-		"3":{
-			"Stats":{
+    },
+    "3":{
+      "Stats":{
         "disk_quota":536870912,
         "mem_quota":402653184,
         "Usage":{
@@ -76,8 +76,8 @@ For each application, these will be emitted as:
           "Mem":250630144
         }
       }
-		}
-	}
+    }
+  }
 }
 ```
 
