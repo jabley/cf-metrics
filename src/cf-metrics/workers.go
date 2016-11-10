@@ -2,20 +2,46 @@ package main
 
 import (
 	"io"
+	"os"
+	"runtime"
 	"time"
 
 	"code.cloudfoundry.org/cli/cf/api/appinstances"
 	"code.cloudfoundry.org/cli/cf/models"
+	"code.cloudfoundry.org/cli/cf/terminal"
 	"code.cloudfoundry.org/cli/cf/trace"
 )
 
-func spawnWorkers(cfInfos []CFInfo, whitelist string, metrics chan AppMetrics, events chan Event, writer io.Writer, logger trace.Printer) {
-	zones := NewZones(cfInfos, whitelist, writer, logger)
+// See: http://stackoverflow.com/questions/7922270/obtain-users-home-directory
+// we can't cross compile using cgo and use user.Current()
+var userHomeDir = func() string {
 
-	for _, each := range zones {
-		zone := each
-		go readSpacesLoop(&zone)
-		go readAppsLoop(&zone, metrics, events)
+	if runtime.GOOS == "windows" {
+		home := os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
+		if home == "" {
+			home = os.Getenv("USERPROFILE")
+		}
+		return home
+	}
+
+	return os.Getenv("HOME")
+}
+
+func spawnWorkers(cfInfos []CFInfo, whitelist string, metrics chan AppMetrics, events chan Event, writer io.Writer, logger trace.Printer) {
+	homeDir := userHomeDir()
+	errorHandler := func(err error) {
+	}
+
+	appWhitelist := parseWhitelist(whitelist)
+
+	teePrinter := terminal.NewTeePrinter(writer)
+	envDialTimeout := getDefaultConfig("CF_DIAL_TIMEOUT", "5")
+	ui := terminal.NewUI(os.Stdin, writer, teePrinter, logger)
+
+	for _, info := range cfInfos {
+		zone := NewZone(info, homeDir, errorHandler, appWhitelist, envDialTimeout, ui, writer, logger)
+		go readSpacesLoop(zone)
+		go readAppsLoop(zone, metrics, events)
 	}
 }
 
@@ -121,6 +147,8 @@ func fetchStats(app models.Application, zone *Zone, metrics chan AppMetrics, now
 func cfStatsToExternalStats(stats appinstances.StatsAPIResponse) (res Stats) {
 	res = make(Stats)
 	for k, v := range stats {
+		diskUsage := calculateUsage(v.Stats.Usage.Disk, v.Stats.DiskQuota)
+		memUsage := calculateUsage(v.Stats.Usage.Mem, v.Stats.MemQuota)
 		res[k] = InstanceStats{
 			Stats: ContainerStats{
 				DiskQuota: v.Stats.DiskQuota,
@@ -129,13 +157,21 @@ func cfStatsToExternalStats(stats appinstances.StatsAPIResponse) (res Stats) {
 					CPU:       v.Stats.Usage.CPU,
 					Disk:      v.Stats.Usage.Disk,
 					Mem:       v.Stats.Usage.Mem,
-					DiskUsage: (float64(v.Stats.Usage.Disk) / float64(v.Stats.DiskQuota)),
-					MemUsage:  (float64(v.Stats.Usage.Mem) / float64(v.Stats.MemQuota)),
+					DiskUsage: diskUsage,
+					MemUsage:  memUsage,
 				},
 			},
 		}
 	}
 	return
+}
+
+func calculateUsage(usage, quota int64) float64 {
+	if usage == 0 || quota == 0 {
+		return 0.0
+	}
+
+	return float64(usage) / float64(quota)
 }
 
 func fetchEvents(app models.Application, zone *Zone, events chan Event, now time.Time, since time.Time) {

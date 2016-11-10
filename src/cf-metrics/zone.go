@@ -3,9 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
-	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -19,21 +17,6 @@ import (
 	"code.cloudfoundry.org/cli/cf/terminal"
 	"code.cloudfoundry.org/cli/cf/trace"
 )
-
-// See: http://stackoverflow.com/questions/7922270/obtain-users-home-directory
-// we can't cross compile using cgo and use user.Current()
-var userHomeDir = func() string {
-
-	if runtime.GOOS == "windows" {
-		home := os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
-		if home == "" {
-			home = os.Getenv("USERPROFILE")
-		}
-		return home
-	}
-
-	return os.Getenv("HOME")
-}
 
 type Zone struct {
 	name        string
@@ -49,7 +32,7 @@ type Zone struct {
 	spaces   map[string]string
 }
 
-func (z Zone) GetSpaceName(guid string) string {
+func (z *Zone) GetSpaceName(guid string) string {
 	z.muSpaces.RLock()
 	defer z.muSpaces.RUnlock()
 
@@ -60,7 +43,7 @@ func (z Zone) GetSpaceName(guid string) string {
 	return guid
 }
 
-func (z Zone) IncludesApp(name string) bool {
+func (z *Zone) IncludesApp(name string) bool {
 	if len(z.whitelist) == 0 {
 		return true
 	}
@@ -70,43 +53,27 @@ func (z Zone) IncludesApp(name string) bool {
 	return isPresent
 }
 
-func NewZones(cfInfos []CFInfo, whitelist string, writer io.Writer, logger trace.Printer) []Zone {
-	zones := make([]Zone, 0)
+func NewZone(info CFInfo, homeDir string, errorHandler func(error), whitelist map[string]bool, envDialTimeout string, ui terminal.UI, writer io.Writer, logger trace.Printer) *Zone {
+	config := NewRepositoryConfig(homeDir, info, errorHandler)
+	repoLocator, cloudController := NewRepoLocator(config, info, envDialTimeout, ui, logger)
 
-	homeDir := userHomeDir()
-	errorHandler := func(err error) {
+	err := setAPIEndpoint(info.API, config, repoLocator.GetEndpointRepository())
+
+	if err != nil {
+		panic(err)
 	}
 
-	appWhitelist := parseWhitelist(whitelist)
+	verifyLogin(repoLocator, info)
 
-	teePrinter := terminal.NewTeePrinter(writer)
-	envDialTimeout := getDefaultConfig("CF_DIAL_TIMEOUT", "5")
-	ui := terminal.NewUI(os.Stdin, writer, teePrinter, logger)
-
-	for _, info := range cfInfos {
-		config := NewRepositoryConfig(homeDir, info, errorHandler)
-		repoLocator, cloudController := NewRepoLocator(config, info, envDialTimeout, ui, logger)
-
-		err := setAPIEndpoint(info.API, config, repoLocator.GetEndpointRepository())
-
-		if err != nil {
-			panic(err)
-		}
-
-		verifyLogin(repoLocator, info)
-
-		zones = append(zones, Zone{
-			name:        info.ZoneName,
-			config:      config,
-			repoLocator: repoLocator,
-			appRepo:     NewAppRepo(config, cloudController),
-			spaceRepo:   NewSpaceRepo(config, cloudController),
-			eventRepo:   NewEventRepo(config, cloudController),
-			whitelist:   appWhitelist,
-		})
+	return &Zone{
+		name:        info.ZoneName,
+		config:      config,
+		repoLocator: repoLocator,
+		appRepo:     NewAppRepo(config, cloudController),
+		spaceRepo:   NewSpaceRepo(config, cloudController),
+		eventRepo:   NewEventRepo(config, cloudController),
+		whitelist:   whitelist,
 	}
-
-	return zones
 }
 
 func parseWhitelist(whitelist string) (res map[string]bool) {
