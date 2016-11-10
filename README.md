@@ -52,53 +52,53 @@ For each application, these will be emitted as:
   "stats":{
     "0":{
       "stats":{
-        "disk-quota":536870912,
-        "mem-quota":402653184,
+        "diskQuota":536870912,
+        "memQuota":402653184,
         "usage":{
           "cpu":0.006985241502010499,
           "disk":186060800,
           "mem":338554880,
-          "disk-usage":0.346565247,
-          "mem-usage":0.84081014
+          "diskUsage":0.346565247,
+          "memUsage":0.84081014
         }
       }
     },
     "1":{
       "stats":{
-        "disk-quota":536870912,
-        "mem-quota":402653184,
+        "diskQuota":536870912,
+        "memQuota":402653184,
         "usage":{
           "cpu":0.007506122659531552,
           "disk":186060800,
           "mem":256016384,
-          "disk-usage":0.34656524658203,
-          "mem-usage":0.63582356770833
+          "diskUsage":0.34656524658203,
+          "memUsage":0.63582356770833
         }
       }
     },
     "2":{
       "stats":{
-        "disk-quota":536870912,
-        "mem-quota":402653184,
+        "diskQuota":536870912,
+        "memQuota":402653184,
         "usage":{
           "cpu":0.004021443931726263,
           "disk":186056704,
           "mem":317755392,
-          "disk-usage":0.3465576171875,
-          "mem-usage":0.78915405273438
+          "diskUsage":0.3465576171875,
+          "memUsage":0.78915405273438
         }
       }
     },
     "3":{
       "stats":{
-        "disk-quota":536870912,
-        "mem-quota":402653184,
+        "diskQuota":536870912,
+        "memQuota":402653184,
         "usage":{
           "cpu":0.00431447831668318,
           "disk":186073088,
           "mem":250630144,
-          "disk-usage":0.34658813476563,
-          "mem-usage":0.62244669596354
+          "diskUsage":0.34658813476563,
+          "memUsage":0.62244669596354
         }
       }
     }
@@ -122,7 +122,7 @@ For each application, these events will be emitted as:
   "app":"hello-python-web",
   "type":"event",
   "timestamp":"2016-11-09T11:49:53.575738294Z",
-  "EventInfo":{
+  "eventInfo":{
     "type":"app.crash",
     "timestamp":"2016-09-20T16:21:29Z"
   }
