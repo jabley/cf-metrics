@@ -147,6 +147,8 @@ func fetchStats(app models.Application, zone *Zone, metrics chan AppMetrics, now
 func cfStatsToExternalStats(stats appinstances.StatsAPIResponse) (res Stats) {
 	res = make(Stats)
 	for k, v := range stats {
+		diskUsage := calculateUsage(v.Stats.Usage.Disk, v.Stats.DiskQuota)
+		memUsage := calculateUsage(v.Stats.Usage.Mem, v.Stats.MemQuota)
 		res[k] = InstanceStats{
 			Stats: ContainerStats{
 				DiskQuota: v.Stats.DiskQuota,
@@ -155,13 +157,21 @@ func cfStatsToExternalStats(stats appinstances.StatsAPIResponse) (res Stats) {
 					CPU:       v.Stats.Usage.CPU,
 					Disk:      v.Stats.Usage.Disk,
 					Mem:       v.Stats.Usage.Mem,
-					DiskUsage: (float64(v.Stats.Usage.Disk) / float64(v.Stats.DiskQuota)),
-					MemUsage:  (float64(v.Stats.Usage.Mem) / float64(v.Stats.MemQuota)),
+					DiskUsage: diskUsage,
+					MemUsage:  memUsage,
 				},
 			},
 		}
 	}
 	return
+}
+
+func calculateUsage(usage, quota int64) float64 {
+	if usage == 0 || quota == 0 {
+		return 0.0
+	}
+
+	return float64(usage) / float64(quota)
 }
 
 func fetchEvents(app models.Application, zone *Zone, events chan Event, now time.Time, since time.Time) {
