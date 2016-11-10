@@ -26,7 +26,7 @@ func NewEventRepo(config coreconfig.Repository, gateway net.Gateway) (repo Event
 func (r EventRepo) GetAppEvents(app models.Application, since time.Time, callback func(models.EventFields) bool) error {
 	return r.gateway.ListPaginatedResources(
 		r.config.APIEndpoint(),
-		fmt.Sprintf("/v2/events?q=actee:%s&q=timestamp%3E%s", app.GUID, url.QueryEscape(since.Format(time.RFC3339))),
+		fmt.Sprintf("/v2/events?q=actee:%s&q=timestamp%s", app.GUID, url.QueryEscape(">"+since.Format(time.RFC3339))),
 		resources.EventResourceNewV2{},
 		func(resource interface{}) bool {
 			return callback(resource.(resources.EventResourceNewV2).ToFields())
