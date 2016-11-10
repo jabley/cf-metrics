@@ -123,7 +123,7 @@ func main() {
 
 	logItem := func(item interface{}) {
 		if err := encoder.Encode(item); err != nil {
-			panic(err)
+			panic(fmt.Sprintf("Problem encoding %v\nGot %v\n", item, err))
 		}
 	}
 
