@@ -2,18 +2,44 @@ package main
 
 import (
 	"io"
+	"os"
+	"runtime"
 	"time"
 
 	"code.cloudfoundry.org/cli/cf/api/appinstances"
 	"code.cloudfoundry.org/cli/cf/models"
+	"code.cloudfoundry.org/cli/cf/terminal"
 	"code.cloudfoundry.org/cli/cf/trace"
 )
 
-func spawnWorkers(cfInfos []CFInfo, whitelist string, metrics chan AppMetrics, events chan Event, writer io.Writer, logger trace.Printer) {
-	zones := NewZones(cfInfos, whitelist, writer, logger)
+// See: http://stackoverflow.com/questions/7922270/obtain-users-home-directory
+// we can't cross compile using cgo and use user.Current()
+var userHomeDir = func() string {
 
-	for _, each := range zones {
-		zone := &each
+	if runtime.GOOS == "windows" {
+		home := os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
+		if home == "" {
+			home = os.Getenv("USERPROFILE")
+		}
+		return home
+	}
+
+	return os.Getenv("HOME")
+}
+
+func spawnWorkers(cfInfos []CFInfo, whitelist string, metrics chan AppMetrics, events chan Event, writer io.Writer, logger trace.Printer) {
+	homeDir := userHomeDir()
+	errorHandler := func(err error) {
+	}
+
+	appWhitelist := parseWhitelist(whitelist)
+
+	teePrinter := terminal.NewTeePrinter(writer)
+	envDialTimeout := getDefaultConfig("CF_DIAL_TIMEOUT", "5")
+	ui := terminal.NewUI(os.Stdin, writer, teePrinter, logger)
+
+	for _, info := range cfInfos {
+		zone := NewZone(info, homeDir, errorHandler, appWhitelist, envDialTimeout, ui, writer, logger)
 		go readSpacesLoop(zone)
 		go readAppsLoop(zone, metrics, events)
 	}
