@@ -13,9 +13,9 @@ func spawnWorkers(cfInfos []CFInfo, whitelist string, metrics chan AppMetrics, e
 	zones := NewZones(cfInfos, whitelist, writer, logger)
 
 	for _, each := range zones {
-		zone := each
-		go readSpacesLoop(&zone)
-		go readAppsLoop(&zone, metrics, events)
+		zone := &each
+		go readSpacesLoop(zone)
+		go readAppsLoop(zone, metrics, events)
 	}
 }
 
