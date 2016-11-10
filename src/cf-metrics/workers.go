@@ -3,7 +3,6 @@ package main
 import (
 	"io"
 	"os"
-	"runtime"
 	"time"
 
 	"code.cloudfoundry.org/cli/cf/api/appinstances"
@@ -11,21 +10,6 @@ import (
 	"code.cloudfoundry.org/cli/cf/terminal"
 	"code.cloudfoundry.org/cli/cf/trace"
 )
-
-// See: http://stackoverflow.com/questions/7922270/obtain-users-home-directory
-// we can't cross compile using cgo and use user.Current()
-var userHomeDir = func() string {
-
-	if runtime.GOOS == "windows" {
-		home := os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
-		if home == "" {
-			home = os.Getenv("USERPROFILE")
-		}
-		return home
-	}
-
-	return os.Getenv("HOME")
-}
 
 func spawnWorkers(cfInfos []CFInfo, whitelist string, metrics chan AppMetrics, events chan Event, writer io.Writer, logger trace.Printer) {
 	homeDir := userHomeDir()
