@@ -80,7 +80,7 @@ type EventInfo struct {
 
 type Event struct {
 	Metric
-	EventInfo EventInfo
+	EventInfo EventInfo `json:"event-info"`
 }
 
 func main() {
