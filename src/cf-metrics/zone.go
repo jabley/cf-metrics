@@ -49,7 +49,7 @@ type Zone struct {
 	spaces   map[string]string
 }
 
-func (z Zone) GetSpaceName(guid string) string {
+func (z *Zone) GetSpaceName(guid string) string {
 	z.muSpaces.RLock()
 	defer z.muSpaces.RUnlock()
 
@@ -60,7 +60,7 @@ func (z Zone) GetSpaceName(guid string) string {
 	return guid
 }
 
-func (z Zone) IncludesApp(name string) bool {
+func (z *Zone) IncludesApp(name string) bool {
 	if len(z.whitelist) == 0 {
 		return true
 	}
