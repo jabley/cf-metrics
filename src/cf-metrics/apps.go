@@ -24,7 +24,7 @@ func NewAppRepo(config coreconfig.Repository, gateway net.Gateway) (repo AppRepo
 	return
 }
 
-// ListApps lists all applicaitons in the organisation. For each application, it
+// ListApps lists all applications in the organisation. For each application, it
 // calls the provided callback function.
 func (ar AppRepo) ListApps(callback func(models.Application) bool) error {
 	return ar.gateway.ListPaginatedResources(
