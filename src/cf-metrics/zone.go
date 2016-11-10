@@ -18,6 +18,7 @@ import (
 	"code.cloudfoundry.org/cli/cf/trace"
 )
 
+// Zone represent a Cloud Foundry zone (an API endpoint) that we wish to query.
 type Zone struct {
 	name        string
 	config      coreconfig.ReadWriter
@@ -32,6 +33,8 @@ type Zone struct {
 	spaces   map[string]string
 }
 
+// GetSpaceName returns the name of the space given the space GUID, or the GUID
+// if the name is not currently known
 func (z *Zone) GetSpaceName(guid string) string {
 	z.muSpaces.RLock()
 	defer z.muSpaces.RUnlock()
@@ -43,6 +46,8 @@ func (z *Zone) GetSpaceName(guid string) string {
 	return guid
 }
 
+// IncludesApp returns true if we should be polling the Zone for details about
+// the specified app, otherwise false
 func (z *Zone) IncludesApp(name string) bool {
 	if len(z.whitelist) == 0 {
 		return true
@@ -53,9 +58,10 @@ func (z *Zone) IncludesApp(name string) bool {
 	return isPresent
 }
 
+// NewZone creates a non-nil new Zone ready for use.
 func NewZone(info CFInfo, homeDir string, errorHandler func(error), whitelist map[string]bool, envDialTimeout string, ui terminal.UI, writer io.Writer, logger trace.Printer) *Zone {
-	config := NewRepositoryConfig(homeDir, info, errorHandler)
-	repoLocator, cloudController := NewRepoLocator(config, info, envDialTimeout, ui, logger)
+	config := newRepositoryConfig(homeDir, info, errorHandler)
+	repoLocator, cloudController := newRepoLocator(config, info, envDialTimeout, ui, logger)
 
 	err := setAPIEndpoint(info.API, config, repoLocator.GetEndpointRepository())
 
@@ -107,14 +113,14 @@ func verifyLogin(repoLocator api.RepositoryLocator, info CFInfo) {
 	}
 }
 
-func NewRepositoryConfig(homeDir string, info CFInfo, errorHandler func(error)) coreconfig.Repository {
+func newRepositoryConfig(homeDir string, info CFInfo, errorHandler func(error)) coreconfig.Repository {
 	configPath := filepath.Join(homeDir, "."+info.Prefix, "config.json")
 	config := coreconfig.NewRepositoryFromFilepath(configPath, errorHandler)
 	config.SetAPIEndpoint(info.API)
 	return config
 }
 
-func NewRepoLocator(config coreconfig.Repository, info CFInfo, envDialTimeout string, ui terminal.UI, logger trace.Printer) (api.RepositoryLocator, net.Gateway) {
+func newRepoLocator(config coreconfig.Repository, info CFInfo, envDialTimeout string, ui terminal.UI, logger trace.Printer) (api.RepositoryLocator, net.Gateway) {
 	gateways := map[string]net.Gateway{
 		"cloud-controller": net.NewCloudControllerGateway(config, time.Now, ui, logger, envDialTimeout),
 		"uaa":              net.NewUAAGateway(config, ui, logger, envDialTimeout),

@@ -28,6 +28,9 @@ func initI18nFunc() bool {
 	return true
 }
 
+// CFInfo is a representation of a Cloud Foundry zone. By Zone, we mean a Cloud
+// Foundry provider region. IBM Bluemix has multiple zones in this sense of the
+// word - US South, EU GB, and Australia.
 type CFInfo struct {
 	ZoneName string
 	Prefix   string
@@ -40,6 +43,8 @@ func (i CFInfo) String() string {
 	return fmt.Sprintf("{Prefix: %s, API: <%s>, Username: <%s>}", i.Prefix, i.API, i.Username)
 }
 
+// Metric is the common header for all documents emitted by this application.
+// Each item should have these data points associated with it.
 type Metric struct {
 	Zone      string    `json:"zone"`
 	Space     string    `json:"space"`
@@ -48,11 +53,15 @@ type Metric struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+// AppMetrics is a document that represents the runtime statistics for a given
+// application.
 type AppMetrics struct {
 	Metric
 	Stats Stats `json:"stats,omitempty"`
 }
 
+// Usage is a fragment that represents instance-level statistics for an
+// application.
 type Usage struct {
 	CPU       float64 `json:"cpu"`
 	Disk      int64   `json:"disk"`
@@ -61,23 +70,33 @@ type Usage struct {
 	MemUsage  float64 `json:"mem-usage"`
 }
 
+// ContainerStats is a fragment that represents instance-level statistics for an
+// application.
 type ContainerStats struct {
 	DiskQuota int64 `json:"disk-quota"`
 	MemQuota  int64 `json:"mem-quota"`
 	Usage     Usage `json:"usage"`
 }
 
+// InstanceStats is a fragment that aggregates all instance-level statistics for
+// an application.
 type InstanceStats struct {
 	Stats ContainerStats `json:"stats"`
 }
 
+// Stats is a map that contains all of the instance stats for a given
+// application. An application can have one or more instances, so we need to
+// capture this multiplicity.
 type Stats map[string]InstanceStats
 
+// EventInfo is a fragment that describes an application-level event, such as
+// restart, update and so on.
 type EventInfo struct {
 	Type      string    `json:"type"`
 	Timestamp time.Time `json:"timestamp"`
 }
 
+// Event is a document that represents a single event for an application.
 type Event struct {
 	Metric
 	EventInfo EventInfo `json:"event-info"`
