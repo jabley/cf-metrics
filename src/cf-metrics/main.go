@@ -66,15 +66,15 @@ type Usage struct {
 	CPU       float64 `json:"cpu"`
 	Disk      int64   `json:"disk"`
 	Mem       int64   `json:"mem"`
-	DiskUsage float64 `json:"disk-usage"`
-	MemUsage  float64 `json:"mem-usage"`
+	DiskUsage float64 `json:"diskUsage"`
+	MemUsage  float64 `json:"memUsage"`
 }
 
 // ContainerStats is a fragment that represents instance-level statistics for an
 // application.
 type ContainerStats struct {
-	DiskQuota int64 `json:"disk-quota"`
-	MemQuota  int64 `json:"mem-quota"`
+	DiskQuota int64 `json:"diskQuota"`
+	MemQuota  int64 `json:"memQuota"`
 	Usage     Usage `json:"usage"`
 }
 
@@ -99,7 +99,7 @@ type EventInfo struct {
 // Event is a document that represents a single event for an application.
 type Event struct {
 	Metric
-	EventInfo EventInfo `json:"event-info"`
+	EventInfo EventInfo `json:"eventInfo"`
 }
 
 func main() {
