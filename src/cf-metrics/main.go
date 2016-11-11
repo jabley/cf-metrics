@@ -53,11 +53,19 @@ type Metric struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+func (m Metric) String() string {
+	return fmt.Sprintf("[zone: %s, space: %s, app: %s, type: %s, timestamp: %s]", m.Zone, m.Space, m.App, m.Type, m.Timestamp.Format(time.RFC3339))
+}
+
 // AppMetrics is a document that represents the runtime statistics for a given
 // application.
 type AppMetrics struct {
 	Metric
 	Stats Stats `json:"stats,omitempty"`
+}
+
+func (m AppMetrics) String() string {
+	return fmt.Sprintf("[metric: %v, stats: %v]", m.Metric, m.Stats)
 }
 
 // Usage is a fragment that represents instance-level statistics for an
@@ -70,6 +78,10 @@ type Usage struct {
 	MemUsage  float64 `json:"memUsage"`
 }
 
+func (u Usage) String() string {
+	return fmt.Sprintf("[cpu: %v, disk: %v, mem: %v, disk-usage: %v, mem-usage: %v]", u.CPU, u.Disk, u.Mem, u.DiskUsage, u.MemUsage)
+}
+
 // ContainerStats is a fragment that represents instance-level statistics for an
 // application.
 type ContainerStats struct {
@@ -78,10 +90,18 @@ type ContainerStats struct {
 	Usage     Usage `json:"usage"`
 }
 
+func (c ContainerStats) String() string {
+	return fmt.Sprintf("[disk-quota: %v, mem-quota: %v, usage: %v]", c.DiskQuota, c.MemQuota, c.Usage)
+}
+
 // InstanceStats is a fragment that aggregates all instance-level statistics for
 // an application.
 type InstanceStats struct {
 	Stats ContainerStats `json:"stats"`
+}
+
+func (i InstanceStats) String() string {
+	return fmt.Sprintf("[stats: %v]", i.Stats)
 }
 
 // Stats is a map that contains all of the instance stats for a given
@@ -96,10 +116,18 @@ type EventInfo struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+func (ei EventInfo) String() string {
+	return fmt.Sprintf("[type: %s, timestamp: %s]", ei.Type, ei.Timestamp.Format(time.RFC3339))
+}
+
 // Event is a document that represents a single event for an application.
 type Event struct {
 	Metric
 	EventInfo EventInfo `json:"eventInfo"`
+}
+
+func (e Event) String() string {
+	return fmt.Sprintf("[metric: %v, event-info: %v]", e.Metric, e.EventInfo)
 }
 
 func main() {
