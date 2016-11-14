@@ -138,7 +138,8 @@ starting with a manifest like:
 ---
 applications:
 - name: worker-app
-  command: cf-metrics -whitelist app1,app2
+  buildpack: https://github.com/cloudfoundry/binary-buildpack.git
+  command: chmod +x cf-metrics-linux-amd64 && ./cf-metrics-linux-amd64 -whitelist app1,app2 || ./cf-metrics-linux-amd64 -whitelist app1,app2
   no-route: true
   health-check-type: none
   memory: 64M
@@ -152,6 +153,50 @@ applications:
     CH_PASSWORD: some-other-passphrase
     CH_API: https://api.lyra-836.appcloud.swisscom.com
     CH_NAME: swisscom
+```
+
+And deploy that using Concourse like:
+
+```yml
+jobs:
+- name: deploy-to-prod
+  plan:
+  - get: gh-metrics-release
+    version: { tag: v0.4.5 }
+    params:
+      globs:
+      - cf-metrics-linux-amd64*
+  - get: gh-repo
+  - aggregate:
+    - put: deploy-app-pws-prod
+      params:
+        current_app_name: {{APP_NAME}}
+        manifest: gh-repo/infra/cloud-foundry/manifest.yml
+        path: gh-metrics-release
+
+resources:
+- name: gh-repo
+  type: git
+  source:
+    uri: {{GIT_REPO}}
+    branch: master
+    private_key: {{GIT_PRIVATE_KEY}}
+
+- name: gh-metrics-release
+  type: github-release
+  source:
+    user: jabley
+    repository: cf-metrics
+    token: {{GIT_ACCESS_TOKEN}}
+
+- name: deploy-app-pws-prod
+  type: cf-resource
+  source:
+    api: {{PWS_API}}
+    username: {{PWS_USER}}
+    password: {{PWS_PASS}}
+    organization: {{PWS_ORG}}
+    space: {{PWS_PROD_SPACE}}
 ```
 
 ## Building
