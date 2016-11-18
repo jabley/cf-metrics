@@ -139,7 +139,7 @@ starting with a manifest like:
 applications:
 - name: worker-app
   buildpack: https://github.com/cloudfoundry/binary-buildpack.git
-  command: chmod +x cf-metrics-linux-amd64 && ./cf-metrics-linux-amd64 -whitelist app1,app2 || ./cf-metrics-linux-amd64 -whitelist app1,app2
+  command: chmod +x cf-metrics-linux-amd64; exec ./cf-metrics-linux-amd64 -whitelist app1,app2
   no-route: true
   health-check-type: none
   memory: 64M
